@@ -89,14 +89,13 @@ public class TwitchApplication {
         String[][] properties = PropertiesManager.getProperties();
         for(int i = 0; i < properties.length; i++){
            loadParams.put(properties[i][0], props.getProperty(properties[i][0], properties[i][1]));
-            System.out.println("Loading param: " + properties[i][0]);
+            System.out.println("Loading param: " + properties[i][0] + " - " + properties[i][1]);
         }
         return loadParams;
     }
 
     private TwitchApplication() {
-        loadParams();
-        twc = new TwitchController(true);
+        twc = new TwitchController();
         twc.loadParams(loadParams());
     }
 
@@ -105,7 +104,7 @@ public class TwitchApplication {
             Properties props = new Properties();
             String[][] properties = PropertiesManager.getProperties();
             for(int i = 0; i < properties.length; i++){
-                System.out.println("Saving param " + i + ": " + properties[i][0]);
+                System.out.println("Saving param " + i + ": " + properties[i][0] + " - " + properties[i][1]);
                 props.setProperty(properties[i][0], paramsMap.get(properties[i][0]));
             }
             if(paramsMap.get("PosX")!=null&&paramsMap.get("PosY")!=null){

@@ -42,6 +42,8 @@ public class ConfigWindow extends javax.swing.JFrame {
         saveProps.put("AutoLogin", ""+autoLoginCheckbox.isSelected());
         saveProps.put("PopoutVideo", ""+popoutVideoCheckbox.isSelected());
         saveProps.put("UndecoratedWindow", ""+decoratedCheckbox.isSelected());
+        saveProps.put("PosX", this.getX()+"");
+        saveProps.put("PosY", this.getY()+183+"");
         return saveProps;
     }
     
@@ -269,7 +271,8 @@ public class ConfigWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void resizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resizeButtonActionPerformed
-        twc.resetLocation(1);
+        twc.resetLocation();
+        twc.showConfigWindow(false);
     }//GEN-LAST:event_resizeButtonActionPerformed
 
     private void remUsernameCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remUsernameCheckboxActionPerformed

@@ -23,7 +23,7 @@ public class TwitchController {
     private ConfigWindow cfw;
     private JSONModel jsm;
     
-    private boolean isLoggedIn;
+    private boolean isLoggedIn = false;
     
     
     // params
@@ -37,7 +37,7 @@ public class TwitchController {
     private int timeout = 30;
     private String username = "";
     
-    public TwitchController(boolean b) {
+    public TwitchController() {
         jsm = new JSONModel(this);
     }
 
@@ -48,7 +48,6 @@ public class TwitchController {
     public String getClientID() {
         return clientID;
     }
-    
     
     public void showMessage(int i, String msg) {
         twv.showMessage(i, msg);
@@ -86,6 +85,7 @@ public class TwitchController {
         twv.enableButton(false);
         ArrayList<Streamer> streamers = generateOnlineList(username);
         if (streamers != null) {
+            isLoggedIn = true;
             twv.setContentPanel(1);
             twv.generateContent(streamers);
         }
@@ -100,6 +100,7 @@ public class TwitchController {
     }
 
     public void setContentPanel(int i) {
+        if(i==0) isLoggedIn = false;
         twv.setContentPanel(i);
     }
     
@@ -119,18 +120,19 @@ public class TwitchController {
         startInTray = Boolean.parseBoolean(params.get("StartMinimized"));
         popoutVideos = Boolean.parseBoolean(params.get("PopoutVideo"));
         timeout = Integer.parseInt(params.get("TimerUpdate"));
-        
-        int[] x = null;
-        if(Boolean.parseBoolean(params.get("RememberPosition"))){
-            x = new int[2];
+        int[] x = new int[2];
+        if((params.get("RememberPosition").equals("true"))){
             try{
-            x[0] = Integer.parseInt(params.get("PosX"));
-            x[1] = Integer.parseInt(params.get("PosY"));
+                x[0] = Integer.parseInt(params.get("PosX"));
+                x[1] = Integer.parseInt(params.get("PosY"));
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(twv, "Could not save position!");
                 x[0] = 0;
                 x[1] = 0;
             }
+        } else  {
+            x[0] = 0;
+            x[1] = 0;
         }
         if(i++ == 0){
             startGui(x, params);
@@ -151,7 +153,7 @@ public class TwitchController {
         if(i!=null){
             twv.setLocation(i[0], i[1]);
         } else {
-            resetLocation(0);
+            resetLocation();
         }
         windowParams();
         cfw.enterProperties(map);
@@ -165,6 +167,10 @@ public class TwitchController {
 
     public void showOnline(ArrayList<Streamer> onlineStreamers) {
         if (startInTray) {
+            if(!isLoggedIn){
+                trayNotify("No list found, please log in.");
+                return;
+            }
             StringBuilder sb;
             if (onlineStreamers == null) {
                 sb = new StringBuilder("No streamers online.");
@@ -190,6 +196,10 @@ public class TwitchController {
     
     public String getUsername(){
         return twv.getUsername();
+    }
+    
+    public void setResetLocation(boolean b){
+        resetLocation = b;
     }
     
     public void snapProperties(){
@@ -218,7 +228,7 @@ public class TwitchController {
     public boolean getNotifications(){
         return disableNotifications;
     }
-
+    
     public void setNotifications(boolean b) {
         this.disableNotifications = b;
     }
@@ -242,13 +252,10 @@ public class TwitchController {
     }
 
     private int startAtScreen = 0;
-    public final void resetLocation(int p) {
+    public final void resetLocation() {
         cfw.setVisible(false);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
-        if(p == 1){
-            resetLocation = true;
-        }
         if (gd.length > 1) {
             startAtScreen = 1;
             setLocation((undecoratedWindow ? -585 : -605), (undecoratedWindow ? 680 : 630));
@@ -296,5 +303,9 @@ public class TwitchController {
         cfw.setLocation(twv.getLocation().x, twv.getLocation().y-i);
         twv.setConfigIcon(b);
         cfw.setVisible(b);
+    }
+    
+    public boolean isConfigVisible(){
+        return cfw.isVisible();
     }
 }

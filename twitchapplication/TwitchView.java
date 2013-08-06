@@ -148,11 +148,10 @@ public class TwitchView extends javax.swing.JFrame {
     }//GEN-LAST:event_twitchLogoMouseDragged
 
     private void configButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configButtonActionPerformed
-        if(configButtonCounter++ % 2 == 0){ // hide it every 2nd click
-            twc.showConfigWindow(true);
-        } else {
+        if(twc.isConfigVisible()){
             twc.showConfigWindow(false);
-            if(configButtonCounter > 1) configButtonCounter = 0;
+        } else {
+            twc.showConfigWindow(true);
         }
     }//GEN-LAST:event_configButtonActionPerformed
 
@@ -213,7 +212,7 @@ public class TwitchView extends javax.swing.JFrame {
         });
         resetPositionItem.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                twc.resetLocation(1);
+                twc.setResetLocation(true);
                 JOptionPane.showMessageDialog(null, "Position will be reset, please open program again.");
                 System.exit(3);
             }

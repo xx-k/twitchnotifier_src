@@ -80,8 +80,7 @@ public class JSONModel {
             System.out.println("getFollowers threw");
             ex.printStackTrace();
             System.out.println("--User was: " + user);
-            if(jsonstring.isEmpty())
-                System.out.println("JSON String was empty");
+            System.out.println("JSON String was:" + jsonstring);
             if(jsonobj == null)
                 System.out.println("JSON object was null");
             if(follows == null)
@@ -130,6 +129,7 @@ public class JSONModel {
         } catch (Exception ex) {
             ex.printStackTrace();
             twc.showMessage(3, ex.getClass().getName() + ": Could not generate channel information!");
+            twc.setContentPanel(0);
         }
         return null;
     }

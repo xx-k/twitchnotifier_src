@@ -17,7 +17,6 @@ import javax.swing.JLabel;
 public class URLLabel extends JLabel {
     
     private String URL;
-    private boolean hover = false;
     
     public URLLabel(){
         super();

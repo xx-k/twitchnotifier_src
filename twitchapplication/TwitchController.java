@@ -86,7 +86,14 @@ public class TwitchController {
         ArrayList<Streamer> streamers = generateOnlineList(username);
         if (streamers != null) {
             isLoggedIn = true;
-            twv.setContentPanel(1);
+            try {
+                twv.setContentPanel(1);
+            }
+            catch (Exception ex) {
+                twv.enableButton(true);
+                showMessage(3, "Unable to show streamers.");
+                ex.printStackTrace();
+            }
             twv.generateContent(streamers);
         }
     }
@@ -192,6 +199,10 @@ public class TwitchController {
         twv.setPopoutVideo(popoutVideos);
         cfw.setTimeout(timeout);
         twv.setUsername(username);
+    }
+    
+    public boolean getIsLoggedin(){
+        return isLoggedIn;
     }
     
     public String getUsername(){

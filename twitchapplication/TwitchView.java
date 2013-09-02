@@ -26,6 +26,8 @@ public class TwitchView extends javax.swing.JFrame {
     private final javax.swing.ImageIcon configCloseIcon = new javax.swing.ImageIcon(getClass().getResource("/res/config_close.png"));
     private final javax.swing.ImageIcon trayOn = new javax.swing.ImageIcon(getClass().getResource("/res/tray_on.png"), "Twitch Notifier");
     private final javax.swing.ImageIcon trayOff = new javax.swing.ImageIcon(getClass().getResource("/res/tray_off.png"), "Twitch Notifier");
+    
+    
     private final SystemTray tray = SystemTray.getSystemTray();
     
     /**
@@ -128,6 +130,8 @@ public class TwitchView extends javax.swing.JFrame {
         }
         if(trayIcon == null){
             buildTray();
+        } else {
+            setTrayIcon(twc.getIsLoggedin());
         }
         twc.toggleWindow(false);
     }//GEN-LAST:event_minimizeButtonActionPerformed
@@ -157,10 +161,13 @@ public class TwitchView extends javax.swing.JFrame {
 
     // xd is a initiate counter, trayIcons not loaded until object has finished constructing
     private int xd = 0;
-    private void setTrayIcon(int l){
-        if(xd++ > 0)
-        trayIcon.setImage((l > 0 ? trayOn.getImage() : trayOff.getImage()));
-        else if(xd > 2) xd = 0;
+    private void setTrayIcon(boolean b) {
+        if(trayIcon != null)
+        if (xd++ > 0) {
+            trayIcon.setImage((b ? trayOn.getImage() : trayOff.getImage()));
+        } else if (xd > 2) {
+            xd = 0;
+        }
     }
     
     private void buildTray(){
@@ -226,9 +233,9 @@ public class TwitchView extends javax.swing.JFrame {
     }
     
     public void setContentPanel(int i){
-        switch(i){
+        switch(i) {
             case 0:
-                setTrayIcon(0);
+                setTrayIcon(false);
                 enableButton(true);
                 listPanel.timerStop();
                 listPanel.resetCounter();
@@ -237,7 +244,7 @@ public class TwitchView extends javax.swing.JFrame {
                 listPanel.setVisible(false);
                 break;
             case 1:
-                setTrayIcon(1);
+                setTrayIcon(true);
                 listPanel.setVisible(true);
                 layeredPane.moveToFront(listPanel);
                 loginPanel.setVisible(false);

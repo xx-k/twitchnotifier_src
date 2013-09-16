@@ -130,9 +130,8 @@ public class TwitchView extends javax.swing.JFrame {
         }
         if(trayIcon == null){
             buildTray();
-        } else {
-            setTrayIcon(twc.getIsLoggedin());
         }
+        setTrayIcon(twc.getIsLoggedin());
         twc.toggleWindow(false);
     }//GEN-LAST:event_minimizeButtonActionPerformed
 
@@ -163,7 +162,7 @@ public class TwitchView extends javax.swing.JFrame {
     private int xd = 0;
     private void setTrayIcon(boolean b) {
         if(trayIcon != null)
-        if (xd++ > 0) {
+        if (++xd > 0) {
             trayIcon.setImage((b ? trayOn.getImage() : trayOff.getImage()));
         } else if (xd > 2) {
             xd = 0;

@@ -118,7 +118,7 @@ public class ListPanel extends javax.swing.JPanel {
         
         drawOnline(0);
         drawOffline(0);
-        twc.setTrayTooltip("");
+        twc.setTrayTooltip(internalOnline.size() + " streamers online.");
         counter++;
     }
 

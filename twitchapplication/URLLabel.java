@@ -65,8 +65,7 @@ public class URLLabel extends JLabel {
             if (Desktop.isDesktopSupported()) {
                 try {
                     Desktop.getDesktop().browse(new URI(URL));
-                } catch (Throwable t) {
-                }
+                } catch (Throwable t) {}
             }
         }
         

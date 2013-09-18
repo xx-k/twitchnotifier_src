@@ -19,7 +19,7 @@ public class ListPanel extends javax.swing.JPanel {
     private TwitchController twc;
     private Timer timer;
     
-    private int counter; //used to determine if we should notify
+    private int counter = 0; //used to determine if we should notify
     private int timeout = 30;
     
     private boolean popoutVideo;
@@ -28,7 +28,10 @@ public class ListPanel extends javax.swing.JPanel {
     private ArrayList<String> internalOffline;
     private ArrayList<Streamer> internalOnline;
     
-    // icons
+    //Store streamer going online, to be used when opening stream from tray
+    private String recentOnline = "";
+    
+    // Arrows in list
     private final ImageIcon downIcon = new ImageIcon(getClass().getResource("/res/down.png"));
     private final ImageIcon upIcon = new ImageIcon(getClass().getResource("/res/up.png"));
     
@@ -63,15 +66,17 @@ public class ListPanel extends javax.swing.JPanel {
                     internalTracker.add(list.get(i).getStreamerName()); // add to tracker
                     if(counter>0){ // do not notify user first time!
                         String message = list.get(i).getStreamerName() +" just went online!";
+                        recentOnline = list.get(i).getStreamerName();
                         twc.showMessage(1, message);
                         twc.trayNotify(message);
-                    } else {
-                        twc.showOnline(internalOnline);
                     }
                 }
             } else {
                 internalOffline.add(list.get(i).getStreamerName());
             }
+        }
+        if(counter==0){
+            twc.showOnline(internalOnline);
         }
         Iterator it = internalTracker.iterator();
         ArrayList<String> internalOnlineTrack = new ArrayList<>();
@@ -118,7 +123,7 @@ public class ListPanel extends javax.swing.JPanel {
         
         drawOnline(0);
         drawOffline(0);
-        twc.setTrayTooltip(internalOnline.size() + " streamers online.");
+        twc.setTrayTooltip(internalOnline.size() + " streamers online");
         counter++;
     }
 
@@ -142,6 +147,14 @@ public class ListPanel extends javax.swing.JPanel {
             return internalOnline;
         }
         return null;
+    }
+    
+    public String getRecentOnline(){
+        return recentOnline;
+    }
+    
+    public void clearRecentOnline(){
+        recentOnline = "";
     }
     
     private void drawOnline(int x){

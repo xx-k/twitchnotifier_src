@@ -4,6 +4,7 @@ package twitchapplication;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Timer;
 import javax.swing.JOptionPane;
 
 
@@ -16,6 +17,7 @@ public class TwitchView extends javax.swing.JFrame {
     public int configButtonCounter = 0;
     private TwitchController twc;
     private TrayIcon trayIcon;
+    private Timer trayTimer = null;
     
     // Define icons
     private final javax.swing.ImageIcon errorIcon = new javax.swing.ImageIcon(getClass().getResource("/res/error.png"));
@@ -26,7 +28,6 @@ public class TwitchView extends javax.swing.JFrame {
     private final javax.swing.ImageIcon configCloseIcon = new javax.swing.ImageIcon(getClass().getResource("/res/config_close.png"));
     private final javax.swing.ImageIcon trayOn = new javax.swing.ImageIcon(getClass().getResource("/res/tray_on.png"), "Twitch Notifier");
     private final javax.swing.ImageIcon trayOff = new javax.swing.ImageIcon(getClass().getResource("/res/tray_off.png"), "Twitch Notifier");
-    
     
     private final SystemTray tray = SystemTray.getSystemTray();
     
@@ -170,6 +171,11 @@ public class TwitchView extends javax.swing.JFrame {
     }
     
     private void buildTray(){
+        if(!tray.isSupported()){
+            showMessage(0, "OS does not support tray icons");
+            return;
+        }
+        
         trayIcon = new TrayIcon(trayOff.getImage());
         final PopupMenu popMenu = new PopupMenu();
         // Create a popup menu components
@@ -196,7 +202,7 @@ public class TwitchView extends javax.swing.JFrame {
         }
         trayIcon.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                twc.showOnline(listPanel.getOnline());
+                trayAction(MouseInfo.getPointerInfo().getLocation());
             }
         });
         restoreItem.addActionListener(new ActionListener() {
@@ -224,6 +230,38 @@ public class TwitchView extends javax.swing.JFrame {
             }
         });
         
+    }
+    
+    private boolean displayMessage = false;
+    public void trayNotify(String messageTitle, String message, java.awt.TrayIcon.MessageType type){
+        displayMessage = true;
+        trayIcon.displayMessage(messageTitle, message, type);
+    }
+    
+    private void trayAction(Point mousePosition){
+        Rectangle bounds = twc.getSafeScreenBounds(mousePosition);
+            Point point = mousePosition;
+            int x = point.x;
+            int y = point.y;
+            if (y < bounds.y) {
+              y = bounds.y;
+            } else if (y > bounds.y + bounds.height) {
+              y = bounds.y + bounds.height;
+            }
+            String streamer = listPanel.getRecentOnline();
+            if(y < bounds.height && !streamer.isEmpty()){
+                String twitchURL = "http://www.twitch.tv/"+streamer;
+                System.out.println("Opening browser URL: "+twitchURL);
+                if (Desktop.isDesktopSupported()) {
+                try {
+                    Desktop.getDesktop().browse(new java.net.URI(twitchURL));
+                } catch (Exception ex) {}
+                    showMessage(3, "Could not open streamers page!");
+                }
+                listPanel.clearRecentOnline();
+                return;
+            }
+                twc.showOnline(listPanel.getOnline());
     }
     
     public void fireUsername(String username){

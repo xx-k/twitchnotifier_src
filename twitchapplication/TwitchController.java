@@ -173,22 +173,20 @@ public class TwitchController {
     }
 
     public void showOnline(ArrayList<Streamer> onlineStreamers) {
-        if (startInTray) {
-            if(!isLoggedIn){
-                trayNotify("No list found, please log in.");
-                return;
-            }
-            StringBuilder sb;
-            if (onlineStreamers == null) {
-                sb = new StringBuilder("No streamers online.");
-            } else {
-                sb = new StringBuilder("Following streamers are online:\n");
-                for (Streamer str : onlineStreamers) {
-                    sb.append(str.getStreamerName()).append(" (" + str.getViewers()+ ")").append("\n");
-                }
-            }
-            trayNotify(sb.toString());
+        if (!isLoggedIn) {
+            trayNotify("No list found, please log in.");
+            return;
         }
+        StringBuilder sb;
+        if (onlineStreamers == null || onlineStreamers.isEmpty()) {
+            sb = new StringBuilder("No streamers online.");
+        } else {
+            sb = new StringBuilder("Following streamers are online:\n");
+            for (Streamer str : onlineStreamers) {
+                sb.append(str.getStreamerName()).append(" (" + str.getViewers() + ")").append("\n");
+            }
+        }
+        trayNotify(sb.toString());
     }
 
     public void windowParams(){
@@ -248,7 +246,7 @@ public class TwitchController {
         if(disableNotifications) return;
         if(twv.getTray() == null) return;
         try {
-            twv.getTray().displayMessage(trayName, message, TrayIcon.MessageType.INFO);
+            twv.trayNotify(trayName, message, TrayIcon.MessageType.INFO);
         } catch (NullPointerException ex) {
             twv.showMessage(0, "Cannot display tray notification");
         }
@@ -262,13 +260,13 @@ public class TwitchController {
         twv.enableButton(b);
     }
 
-    private int startAtScreen = 0;
     public final void resetLocation() {
+        //FIXME: Should determine, if running two screens if they are 2x 1080
+        // else, make sure screen is 1080 AND THEN set the location
         cfw.setVisible(false);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         if (gd.length > 1) {
-            startAtScreen = 1;
             setLocation((undecoratedWindow ? -585 : -605), (undecoratedWindow ? 680 : 630));
         } else if (gd.length >= 1) {
             setLocation((undecoratedWindow ? 1405 : 1315), (undecoratedWindow ? 815 : 775));
@@ -288,6 +286,23 @@ public class TwitchController {
         return pos;
     }
     
+    public void setTrayTooltip(String tooltip){
+        twv.setTrayTooltip(tooltip);
+    }
+    
+    public boolean isConfigVisible(){
+        return cfw.isVisible();
+    }
+    
+    public void showConfigWindow(boolean b) {
+        int x = (GraphicsEnvironment.getLocalGraphicsEnvironment().
+                getScreenDevices().length > 1) ? 183 : -20; // screen bounds
+        int i = (twv.getBounds().y > x) ? 183 : -224; // window offset
+        cfw.setLocation(twv.getLocation().x, twv.getLocation().y-i);
+        twv.setConfigIcon(b);
+        cfw.setVisible(b);
+    }
+    
     public int getScreenNumber(Window wind){
         Window myWind = wind;
         GraphicsConfiguration config = myWind.getGraphicsConfiguration();
@@ -303,20 +318,62 @@ public class TwitchController {
         return screen;
     }
     
-    public void setTrayTooltip(String tooltip){
-        twv.setTrayTooltip(tooltip);
+    /** The following code was written by 
+     * MadProgrammer (http://stackoverflow.com/users/992484/madprogrammer)
+     * on Stackoverflow, question 14431467 **/
+    public Rectangle getSafeScreenBounds(Point pos) {
+
+        Rectangle bounds = getScreenBoundsAt(pos);
+        Insets insets = getScreenInsetsAt(pos);
+
+        bounds.x += insets.left;
+        bounds.y += insets.top;
+        bounds.width -= (insets.left + insets.right);
+        bounds.height -= (insets.top + insets.bottom);
+
+        return bounds;
+
     }
 
-    public void showConfigWindow(boolean b) {
-        int x = (GraphicsEnvironment.getLocalGraphicsEnvironment().
-                getScreenDevices().length > 1) ? 183 : -20; // screen bounds
-        int i = (twv.getBounds().y > x) ? 183 : -224; // window offset
-        cfw.setLocation(twv.getLocation().x, twv.getLocation().y-i);
-        twv.setConfigIcon(b);
-        cfw.setVisible(b);
+    public Insets getScreenInsetsAt(Point pos) {
+      GraphicsDevice gd = getGraphicsDeviceAt(pos);
+      Insets insets = null;
+      if (gd != null) {
+        insets = Toolkit.getDefaultToolkit().getScreenInsets(gd.getDefaultConfiguration());
+      }
+      return insets;
     }
-    
-    public boolean isConfigVisible(){
-        return cfw.isVisible();
+
+    public  Rectangle getScreenBoundsAt(Point pos) {
+          GraphicsDevice gd = getGraphicsDeviceAt(pos);
+          Rectangle bounds = null;
+          if (gd != null) {
+            bounds = gd.getDefaultConfiguration().getBounds();
+          }
+          return bounds;
     }
+
+    public GraphicsDevice getGraphicsDeviceAt(Point pos) {
+        GraphicsDevice device = null;
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice lstGDs[] = ge.getScreenDevices();
+
+        ArrayList<GraphicsDevice> lstDevices = new ArrayList<>(lstGDs.length);
+
+        for (GraphicsDevice gd : lstGDs) {
+          GraphicsConfiguration gc = gd.getDefaultConfiguration();
+          Rectangle screenBounds = gc.getBounds();
+          if (screenBounds.contains(pos)) {
+            lstDevices.add(gd);
+          }
+        }
+        if (lstDevices.size() > 0) {
+          device = lstDevices.get(0);
+        } else {
+          device = ge.getDefaultScreenDevice();
+        }
+        return device;
+  }
+    /** END OF CODE BLOCK **/
 }

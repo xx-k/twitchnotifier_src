@@ -89,6 +89,7 @@ public class ListPanel extends javax.swing.JPanel {
                 it.remove();
                 twc.showMessage(1, str + " went offline.");
                 twc.trayNotify(str + " went offline.");
+                recentOnline = "";
             }
             
         }

@@ -4,7 +4,6 @@ package twitchapplication;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Timer;
 import javax.swing.JOptionPane;
 
 
@@ -17,7 +16,6 @@ public class TwitchView extends javax.swing.JFrame {
     public int configButtonCounter = 0;
     private TwitchController twc;
     private TrayIcon trayIcon;
-    private Timer trayTimer = null;
     
     // Define icons
     private final javax.swing.ImageIcon errorIcon = new javax.swing.ImageIcon(getClass().getResource("/res/error.png"));

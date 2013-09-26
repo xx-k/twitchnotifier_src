@@ -59,6 +59,11 @@ public class LoginPanel extends javax.swing.JPanel {
             }
         });
 
+        usernameTextField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                usernameTextFieldCaretUpdate(evt);
+            }
+        });
         usernameTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usernameTextFieldActionPerformed(evt);
@@ -156,6 +161,10 @@ public class LoginPanel extends javax.swing.JPanel {
         }
         new FieldWorker().execute();
     }//GEN-LAST:event_usernameTextFieldActionPerformed
+
+    private void usernameTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_usernameTextFieldCaretUpdate
+        twc.allowUsernameToBeRemembered(!usernameTextField.getText().isEmpty());
+    }//GEN-LAST:event_usernameTextFieldCaretUpdate
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton goButton;

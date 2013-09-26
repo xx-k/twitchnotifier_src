@@ -33,6 +33,7 @@ public class TwitchView extends javax.swing.JFrame {
      * Creates new form TwitchView
      */
     public TwitchView(TwitchController twc, boolean undecorated) {
+        super();
         this.twc = twc;
         this.setUndecorated(undecorated);
         initComponents();
@@ -122,7 +123,6 @@ public class TwitchView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void minimizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minimizeButtonActionPerformed
-        System.out.println(evt.getActionCommand());
         if (!SystemTray.isSupported()) {
             showMessage(0, "Tray is not supported");
             return;
@@ -152,8 +152,12 @@ public class TwitchView extends javax.swing.JFrame {
     private void configButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configButtonActionPerformed
         if(twc.isConfigVisible()){
             twc.showConfigWindow(false);
+            showMessage(1, "Configuration saved!");
+            twc.loadParams(twc.getConfigWindow().getProperties());
+            twc.snapProperties();
         } else {
             twc.showConfigWindow(true);
+            showMessage(2, "");
         }
     }//GEN-LAST:event_configButtonActionPerformed
 
@@ -230,9 +234,7 @@ public class TwitchView extends javax.swing.JFrame {
         
     }
     
-    private boolean displayMessage = false;
     public void trayNotify(String messageTitle, String message, java.awt.TrayIcon.MessageType type){
-        displayMessage = true;
         trayIcon.displayMessage(messageTitle, message, type);
     }
     
@@ -259,7 +261,8 @@ public class TwitchView extends javax.swing.JFrame {
                 listPanel.clearRecentOnline();
                 return;
             }
-                twc.showOnline(listPanel.getOnline());
+            listPanel.clearRecentOnline();
+            twc.showOnline(listPanel.getOnline());
     }
     
     public void fireUsername(String username){
@@ -369,7 +372,6 @@ public class TwitchView extends javax.swing.JFrame {
         if(i++>0){
             listPanel.redrawList();
         }
-            
     }
 
     public void setConfigIcon(boolean b) {

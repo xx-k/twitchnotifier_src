@@ -81,6 +81,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="usernameTextField">
       <Events>
+        <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="usernameTextFieldCaretUpdate"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="usernameTextFieldActionPerformed"/>
       </Events>
     </Component>

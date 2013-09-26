@@ -49,8 +49,15 @@ public class TwitchController {
         return clientID;
     }
     
+    /**
+     * @param i 0 = error, 1 = info, 2 = blank, 3 = warning (exceptions)
+     */
     public void showMessage(int i, String msg) {
         twv.showMessage(i, msg);
+    }
+    
+    public void allowUsernameToBeRemembered(boolean b){
+        cfw.allowUsernameToBeRemembered(b);
     }
     
     public ArrayList<Streamer> generateOnlineList(String username) {
@@ -148,6 +155,10 @@ public class TwitchController {
         }
     }
   
+    public void enablePopoutLinks(boolean popout){
+        twv.setPopoutVideo(popout);
+    }
+    
     private void startGui(int[] i, HashMap<String, String> map) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -174,7 +185,7 @@ public class TwitchController {
 
     public void showOnline(ArrayList<Streamer> onlineStreamers) {
         if (!isLoggedIn) {
-            trayNotify("No list found, please log in.");
+            trayNotify("Please log in first.");
             return;
         }
         StringBuilder sb;
@@ -374,6 +385,6 @@ public class TwitchController {
           device = ge.getDefaultScreenDevice();
         }
         return device;
-  }
+    }
     /** END OF CODE BLOCK **/
 }

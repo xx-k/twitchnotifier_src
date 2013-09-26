@@ -28,9 +28,6 @@ public class ConfigWindow extends javax.swing.JFrame {
         this.twc = twc;
     }
     
-    public void setProperties(HashMap<String, String> paramsSet){
-        
-    }
     
     public HashMap<String, String> getProperties(){
         HashMap<String, String> saveProps = new HashMap<>();
@@ -60,6 +57,16 @@ public class ConfigWindow extends javax.swing.JFrame {
         decoratedCheckbox.setSelected(!b);
         popoutVideoCheckbox.setSelected(Boolean.parseBoolean(enterMap.get("PopoutVideo")));
         decoratedCheckbox.setSelected(Boolean.parseBoolean(enterMap.get("UndecoratedWindow")));
+        
+        if(remUsernameCheckbox.isSelected()){
+            if(autoLoginCheckbox.isSelected()){
+                remUsernameCheckbox.setEnabled(false);
+                autoLoginCheckbox.setEnabled(true);
+                return;
+            }
+            autoLoginCheckbox.setEnabled(true);
+            remUsernameCheckbox.setEnabled(true);
+        }
     }
 
     public int getTimeout(){
@@ -123,7 +130,6 @@ public class ConfigWindow extends javax.swing.JFrame {
         autoLoginCheckbox = new javax.swing.JCheckBox();
         startMinimizedCheckbox = new javax.swing.JCheckBox();
         resetButton = new javax.swing.JButton();
-        saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -138,6 +144,11 @@ public class ConfigWindow extends javax.swing.JFrame {
 
         popoutVideoCheckbox.setText("Popout Video");
         popoutVideoCheckbox.setToolTipText("Checing this option opens the stream in the \"popout\" window");
+        popoutVideoCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popoutVideoCheckboxActionPerformed(evt);
+            }
+        });
 
         timerChangeList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 secs", "30 secs", "1 minute", "2 minutes" }));
 
@@ -169,6 +180,7 @@ public class ConfigWindow extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "General", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 1, 10), new java.awt.Color(0, 0, 0))); // NOI18N
 
         remUsernameCheckbox.setText("Remember username");
+        remUsernameCheckbox.setEnabled(false);
         remUsernameCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 remUsernameCheckboxActionPerformed(evt);
@@ -178,16 +190,16 @@ public class ConfigWindow extends javax.swing.JFrame {
         remTrayCheckbox.setText("Disable tray notifcations");
 
         decoratedCheckbox.setText("Hide Window Border");
-        decoratedCheckbox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                decoratedCheckboxActionPerformed(evt);
-            }
-        });
 
         remPositionCheckbox.setText("Remember position");
 
         autoLoginCheckbox.setText("Auto login");
         autoLoginCheckbox.setEnabled(false);
+        autoLoginCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoLoginCheckboxActionPerformed(evt);
+            }
+        });
 
         startMinimizedCheckbox.setText("Start minimized");
 
@@ -228,13 +240,6 @@ public class ConfigWindow extends javax.swing.JFrame {
             }
         });
 
-        saveButton.setText("Save Config");
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButtonActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -243,8 +248,7 @@ public class ConfigWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(resetButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(resizeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(saveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(resizeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -255,15 +259,13 @@ public class ConfigWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(resizeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resetButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(saveButton))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(resetButton))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -276,24 +278,8 @@ public class ConfigWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_resizeButtonActionPerformed
 
     private void remUsernameCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remUsernameCheckboxActionPerformed
-        if(twc.getUsername().isEmpty()){
-            twc.showMessage(3, "No username entered");
-            remUsernameCheckbox.setSelected(false);
-            return;
-        }
-        if(remUsernameCheckbox.isSelected()){
-            autoLoginCheckbox.setEnabled(true);
-        } else {
-            autoLoginCheckbox.setEnabled(false);
-            autoLoginCheckbox.setSelected(false);
-        }
+        autoLoginCheckbox.setEnabled(true);
     }//GEN-LAST:event_remUsernameCheckboxActionPerformed
-
-    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        twc.showMessage(1, "Configuration saved!");
-        twc.loadParams(getProperties());
-        twc.snapProperties();
-    }//GEN-LAST:event_saveButtonActionPerformed
 
     
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
@@ -304,10 +290,16 @@ public class ConfigWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_resetButtonActionPerformed
 
-    private void decoratedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decoratedCheckboxActionPerformed
-        twc.showMessage(1, "Restart program for option to take effect!");
-    }//GEN-LAST:event_decoratedCheckboxActionPerformed
+    private void popoutVideoCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popoutVideoCheckboxActionPerformed
+        twc.enablePopoutLinks(popoutVideoCheckbox.isSelected());
+    }//GEN-LAST:event_popoutVideoCheckboxActionPerformed
 
+    private void autoLoginCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoLoginCheckboxActionPerformed
+        remUsernameCheckbox.setEnabled(!autoLoginCheckbox.isSelected());
+    }//GEN-LAST:event_autoLoginCheckboxActionPerformed
+
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoLoginCheckbox;
     private javax.swing.JCheckBox decoratedCheckbox;
@@ -319,9 +311,17 @@ public class ConfigWindow extends javax.swing.JFrame {
     private javax.swing.JCheckBox remUsernameCheckbox;
     private javax.swing.JButton resetButton;
     private javax.swing.JButton resizeButton;
-    private javax.swing.JButton saveButton;
     private javax.swing.JCheckBox startMinimizedCheckbox;
     private javax.swing.JButton timerChangeButton;
     private javax.swing.JComboBox timerChangeList;
     // End of variables declaration//GEN-END:variables
+
+    public void allowUsernameToBeRemembered(boolean b) {
+        remUsernameCheckbox.setEnabled(b);
+        if(!b){
+            remUsernameCheckbox.setSelected(false);
+            autoLoginCheckbox.setEnabled(false);
+            autoLoginCheckbox.setSelected(false);
+        }
+    }    
 }

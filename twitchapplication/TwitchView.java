@@ -33,7 +33,6 @@ public class TwitchView extends javax.swing.JFrame {
      * Creates new form TwitchView
      */
     public TwitchView(TwitchController twc, boolean undecorated) {
-        super();
         this.twc = twc;
         this.setUndecorated(undecorated);
         initComponents();

@@ -12,6 +12,8 @@ public class Streamer {
     private boolean status = false;
     private String streamerName = "";
     private int viewers = 0;
+    private String streamTitle = "";
+    private String gameTitle = "";
     
     /**
      * Create a Streamer wrapper object
@@ -22,6 +24,14 @@ public class Streamer {
         this.status = status;
         this.streamerName = name;
         this.viewers = 0;
+    }
+    
+    public Streamer(String name, boolean status, String gameTitle, String streamTitle, int viewers){
+        this.viewers = viewers;
+        this.status = status;
+        this.gameTitle = gameTitle;
+        this.streamTitle = streamTitle;
+        this.streamerName = name;
     }
     
     public Streamer(String name, boolean status, int viewers){
@@ -62,6 +72,22 @@ public class Streamer {
 
     public void setStreamerName(String streamerName) {
         this.streamerName = streamerName;
+    }
+
+    public String getStreamTitle() {
+        return streamTitle;
+    }
+
+    public void setStreamTitle(String streamTitle) {
+        this.streamTitle = streamTitle;
+    }
+
+    public String getGameTitle() {
+        return gameTitle;
+    }
+
+    public void setGameTitle(String gameTitle) {
+        this.gameTitle = gameTitle;
     }
     
     @Override

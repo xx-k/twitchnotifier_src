@@ -180,6 +180,7 @@ public class ListPanel extends javax.swing.JPanel {
 
             URLLabel label = generateJLabel(internalOnline.get(i).getStreamerName() + " (" + internalOnline.get(i).getViewers() + ")", true);
             label.setURL(url);
+            label.setToolTipText("\""+internalOnline.get(i).getStreamTitle()+"\" @ "+internalOnline.get(i).getGameTitle());
             onlinePanel.add(label);
             j++; //label added, increment entry counter
 

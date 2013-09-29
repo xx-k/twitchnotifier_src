@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package twitchapplication;
 
 import java.io.BufferedReader;
@@ -68,6 +64,16 @@ public class JSONModel {
         try {
             jsonstring = readUrl("https://api.twitch.tv/kraken/users/" + user + "/follows/channels");
             jsonobj = new JSONObject(jsonstring);
+            
+            int channelsInObject = jsonobj.getInt("_total");
+            if(channelsInObject > 24){ //Without a specified range the API will respond with a default number of 25 channels. Some users might have more than 25 followed channels.
+                if(channelsInObject>99){ // https://github.com/justintv/Twitch-API/blob/master/v3_resources/streams.md - "Maximum number of objects in array. Default is 25. Maximum is 100."
+                    twc.showMessage(0, "Current version does not support more than 100 followed channels.");  //FIX THIS: need of a better API implementation (using "next" under "_links" to build a larger list).
+                    channelsInObject=100;
+                } 
+                jsonstring = readUrl("https://api.twitch.tv/kraken/users/" + user + "/follows/channels?limit="+channelsInObject);
+                 jsonobj = new JSONObject(jsonstring);
+            }
             follows = jsonobj.getJSONArray("follows");
             ArrayList<String> al = new ArrayList<>();
             for (int i = 0; i < follows.length(); i++) {
@@ -114,16 +120,26 @@ public class JSONModel {
             String jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb);
             JSONObject jbo = new JSONObject(jsonString);
             JSONArray array = jbo.getJSONArray("streams");
-            //int viewers = ;
-            //System.out.println(viewers + "");
+            int channelsInObject = array.length();
+            if(channelsInObject > 24){ //Without a specified range the API will respond with a default number of 25 channels. Some users might have more than 25 followed channels.
+                if(channelsInObject>99){
+                    twc.showMessage(0, "Current version only supports up to 100 online channels.");
+                } 
+                jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb + "?limit="+channelsInObject);
+                 jbo = new JSONObject(jsonString);
+                 array = jbo.getJSONArray("streams");
+            }
             
             ArrayList<Streamer> al = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 JSONObject streamer = array.getJSONObject(i);
                 JSONObject channel = streamer.getJSONObject("channel");
-                Streamer addStreamer = new Streamer((String) channel.get("display_name"), true, streamer.getInt("viewers"));
+                String streamerName = (String) channel.get("display_name");
+                int viewerCount = streamer.getInt("viewers");
+                String streamTitle = (String) channel.get("status");
+                String gameTitle = (String) streamer.get("game");
+                Streamer addStreamer = new Streamer(streamerName, true, gameTitle, streamTitle, viewerCount);
                 al.add(addStreamer);
-                //al.add((String) channel.get("display_name"));
             }
             return al;
         } catch (Exception ex) {

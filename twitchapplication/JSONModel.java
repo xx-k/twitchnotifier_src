@@ -38,14 +38,14 @@ public class JSONModel {
 
             return builder.toString();
         } catch (Exception ex) {
-            twc.showMessage(3, ex.getClass().getName() + ": Unable to open Twitch TV!");
+            twc.showMessage(TwitchController.MessageType.WARNING, ex.getClass().getName() + ": Unable to open Twitch TV!");
             return null;
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException ex) {
-                    twc.showMessage(3, ex.getClass().getName() + ": could not close HTTP stream!");
+                    twc.showMessage(TwitchController.MessageType.WARNING, ex.getClass().getName() + ": could not close HTTP stream!");
                 }
             }
         }
@@ -68,7 +68,7 @@ public class JSONModel {
             int channelsInObject = jsonobj.getInt("_total");
             if(channelsInObject > 24){ //Without a specified range the API will respond with a default number of 25 channels. Some users might have more than 25 followed channels.
                 if(channelsInObject>99){ // https://github.com/justintv/Twitch-API/blob/master/v3_resources/streams.md - "Maximum number of objects in array. Default is 25. Maximum is 100."
-                    twc.showMessage(0, "Current version does not support more than 100 followed channels.");  //FIX THIS: need of a better API implementation (using "next" under "_links" to build a larger list).
+                    twc.showMessage(TwitchController.MessageType.ERROR, "Current version does not support more than 100 followed channels.");  //FIX THIS: need of a better API implementation (using "next" under "_links" to build a larger list).
                     channelsInObject=100;
                 } 
                 jsonstring = readUrl("https://api.twitch.tv/kraken/users/" + user + "/follows/channels?limit="+channelsInObject);
@@ -92,9 +92,9 @@ public class JSONModel {
             if(follows == null)
                 System.out.println("JSON Array was null");
             if (ex.getClass().getName().contains("NullPointerException")) {
-                twc.showMessage(0, "Username not found!");
+                twc.showMessage(TwitchController.MessageType.ERROR, "Username not found!");
             } else {
-                twc.showMessage(3, ex.getClass().getName() + " was thrown");
+                twc.showMessage(TwitchController.MessageType.WARNING, ex.getClass().getName() + " was thrown");
             }
             twc.setLoginButton(true);
         }
@@ -108,6 +108,7 @@ public class JSONModel {
      * @param list The list of users to be checked.
      * @return Returns a filtered list (online people only).
      */
+    private int n = 3; // channel info counter
     public ArrayList<Streamer> getOnline(ArrayList<String> list) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
@@ -123,7 +124,7 @@ public class JSONModel {
             int channelsInObject = array.length();
             if(channelsInObject > 24){ //Without a specified range the API will respond with a default number of 25 channels. Some users might have more than 25 followed channels.
                 if(channelsInObject>99){
-                    twc.showMessage(0, "Current version only supports up to 100 online channels.");
+                    twc.showMessage(TwitchController.MessageType.ERROR, "Current version only supports up to 100 online channels.");
                 } 
                 jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb + "?limit="+channelsInObject);
                  jbo = new JSONObject(jsonString);
@@ -144,9 +145,14 @@ public class JSONModel {
             return al;
         } catch (Exception ex) {
             ex.printStackTrace();
-            twc.showMessage(3, ex.getClass().getName() + ": Could not generate channel information!");
-            twc.setContentPanel(0);
+            if (--n == 0) {
+                n = 3;
+                twc.setContentPanel(0);
+            } else {
+                twc.trayNotify("Unable to generate channel information (" + n + " / 3 retries left)");
+            }
+            twc.showMessage(TwitchController.MessageType.WARNING, ex.getClass().getName() + ": Could not generate channel information! View is outdated!");
+            return null;
         }
-        return null;
     }
 }

@@ -284,9 +284,9 @@ public class ConfigWindow extends javax.swing.JFrame {
     
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         if(TwitchApplication.getInstance().deleteParams()){
-            twc.showMessage(1, "Config deleted!");
+            twc.showMessage(TwitchController.MessageType.INFO, "Config deleted!");
         } else {
-            twc.showMessage(3, "Unable to delete file!");
+            twc.showMessage(TwitchController.MessageType.ERROR, "Unable to delete file!");
         }
     }//GEN-LAST:event_resetButtonActionPerformed
 
@@ -317,7 +317,9 @@ public class ConfigWindow extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public void allowUsernameToBeRemembered(boolean b) {
-        remUsernameCheckbox.setEnabled(b);
+        //FIXME: In logout transisiton, if a username is remembered, the "remember username" checkbox becomes activated upon caret update
+        // Proposed: Rewrite check logic
+        remUsernameCheckbox.setEnabled(b); 
         if(!b){
             remUsernameCheckbox.setSelected(false);
             autoLoginCheckbox.setEnabled(false);

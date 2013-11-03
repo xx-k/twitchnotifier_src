@@ -19,6 +19,10 @@ public class TwitchController {
     private final String trayName = "Twitch Notifier";
     
     
+    public enum MessageType {
+        INFO, WARNING, ERROR, BLANK;
+    }
+    
     private TwitchView twv;
     private ConfigWindow cfw;
     private JSONModel jsm;
@@ -52,8 +56,8 @@ public class TwitchController {
     /**
      * @param i 0 = error, 1 = info, 2 = blank, 3 = warning (exceptions)
      */
-    public void showMessage(int i, String msg) {
-        twv.showMessage(i, msg);
+    public void showMessage(MessageType en, String msg) {
+        twv.showMessage(en, msg);
     }
     
     public void allowUsernameToBeRemembered(boolean b){
@@ -62,7 +66,6 @@ public class TwitchController {
     
     public ArrayList<Streamer> generateOnlineList(String username) {
         ArrayList<String> follows = jsm.getFollowers(username);
-        //ArrayList<String> onlineList = jsm.getOnline(follows);
         ArrayList<Streamer> onlineList = jsm.getOnline(follows);
         ArrayList<Streamer> streamers = new ArrayList<>();
         ArrayList<String> alreadyAdded = new ArrayList<>();
@@ -98,7 +101,7 @@ public class TwitchController {
             }
             catch (Exception ex) {
                 twv.enableButton(true);
-                showMessage(3, "Unable to show streamers.");
+                showMessage(MessageType.WARNING, "Unable to show streamers.");
                 ex.printStackTrace();
             }
             twv.generateContent(streamers);
@@ -121,7 +124,6 @@ public class TwitchController {
     public void toggleWindow(boolean b){
         twv.setVisible(b);
         showConfigWindow(false);
-        if(!b) twv.configButtonCounter = 0;
         twv.setConfigIcon(false);
     }
     
@@ -163,7 +165,7 @@ public class TwitchController {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
-            twv.showMessage(3, ex.getClass().getName() + ": Could not set layout, using default UI");
+            twv.showMessage(MessageType.WARNING, ex.getClass().getName() + ": Could not set layout, using default UI");
         }
         JFrame.setDefaultLookAndFeelDecorated(true);
         twv = new TwitchView(this, undecoratedWindow);
@@ -259,7 +261,7 @@ public class TwitchController {
         try {
             twv.trayNotify(trayName, message, TrayIcon.MessageType.INFO);
         } catch (NullPointerException ex) {
-            twv.showMessage(0, "Cannot display tray notification");
+            twv.showMessage(MessageType.WARNING, "Cannot display tray notification");
         }
     }
     
@@ -282,7 +284,7 @@ public class TwitchController {
         } else if (gd.length >= 1) {
             setLocation((undecoratedWindow ? 1405 : 1315), (undecoratedWindow ? 815 : 775));
         } else {
-            twv.showMessage(0, "Unable to detect screens, cannot set window location.");
+            twv.showMessage(MessageType.ERROR, "Unable to detect screens, cannot set window location.");
         }
     }
     

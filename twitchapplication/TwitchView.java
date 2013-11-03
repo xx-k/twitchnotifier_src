@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import twitchapplication.TwitchController.MessageType;
 
 
 /**
@@ -13,7 +14,6 @@ import javax.swing.JOptionPane;
  */
 public class TwitchView extends javax.swing.JFrame {
     
-    public int configButtonCounter = 0;
     private TwitchController twc;
     private TrayIcon trayIcon;
     
@@ -123,7 +123,7 @@ public class TwitchView extends javax.swing.JFrame {
 
     private void minimizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minimizeButtonActionPerformed
         if (!SystemTray.isSupported()) {
-            showMessage(0, "Tray is not supported");
+            showMessage(MessageType.WARNING, "Tray is not supported");
             return;
         }
         if(trayIcon == null){
@@ -151,12 +151,12 @@ public class TwitchView extends javax.swing.JFrame {
     private void configButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configButtonActionPerformed
         if(twc.isConfigVisible()){
             twc.showConfigWindow(false);
-            showMessage(1, "Configuration saved!");
+            showMessage(MessageType.INFO, "Configuration saved!");
             twc.loadParams(twc.getConfigWindow().getProperties());
             twc.snapProperties();
         } else {
             twc.showConfigWindow(true);
-            showMessage(2, "");
+            showMessage(MessageType.BLANK, "");
         }
     }//GEN-LAST:event_configButtonActionPerformed
 
@@ -173,7 +173,7 @@ public class TwitchView extends javax.swing.JFrame {
     
     private void buildTray(){
         if(!tray.isSupported()){
-            showMessage(0, "OS does not support tray icons");
+            showMessage(MessageType.ERROR, "OS does not support tray icons");
             return;
         }
         
@@ -198,7 +198,7 @@ public class TwitchView extends javax.swing.JFrame {
         try {
             tray.add(trayIcon);
         } catch (AWTException e) {
-            showMessage(0, "Could not add tray icon!");
+            showMessage(MessageType.ERROR, "Could not add tray icon!");
             return;
         }
         trayIcon.addActionListener(new ActionListener() {
@@ -236,34 +236,35 @@ public class TwitchView extends javax.swing.JFrame {
     public void trayNotify(String messageTitle, String message, java.awt.TrayIcon.MessageType type){
         trayIcon.displayMessage(messageTitle, message, type);
     }
-    
-    private void trayAction(Point mousePosition){
+
+    private void trayAction(Point mousePosition) {
         Rectangle bounds = twc.getSafeScreenBounds(mousePosition);
-            Point point = mousePosition;
-            int x = point.x;
-            int y = point.y;
-            if (y < bounds.y) {
-              y = bounds.y;
-            } else if (y > bounds.y + bounds.height) {
-              y = bounds.y + bounds.height;
-            }
-            String streamer = listPanel.getRecentOnline();
-            if(y < bounds.height && !streamer.isEmpty()){
-                String twitchURL = "http://www.twitch.tv/"+streamer;
-                System.out.println("Opening browser URL: "+twitchURL);
-                if (Desktop.isDesktopSupported()) {
+        Point point = mousePosition;
+        int x = point.x;
+        int y = point.y;
+        if (y < bounds.y) {
+            y = bounds.y;
+        } else if (y > bounds.y + bounds.height) {
+            y = bounds.y + bounds.height;
+        }
+        String streamer = listPanel.getRecentOnline();
+        if (y < bounds.height && !streamer.isEmpty()) {
+            String twitchURL = "http://www.twitch.tv/" + streamer;
+            System.out.println("Opening browser URL: " + twitchURL);
+            if (Desktop.isDesktopSupported()) {
                 try {
                     Desktop.getDesktop().browse(new java.net.URI(twitchURL));
-                } catch (Exception ex) {}
-                    showMessage(3, "Could not open streamers page!");
+                } catch (Exception ex) {
                 }
-                listPanel.clearRecentOnline();
-                return;
+                showMessage(MessageType.ERROR, "Could not open streamers page!");
             }
             listPanel.clearRecentOnline();
-            twc.showOnline(listPanel.getOnline());
+            return;
+        }
+        listPanel.clearRecentOnline();
+        twc.showOnline(listPanel.getOnline());
     }
-    
+
     public void fireUsername(String username){
         twc.generateOnlineList(username);
         loginPanel.enableControl(false);
@@ -326,20 +327,21 @@ public class TwitchView extends javax.swing.JFrame {
     /**
      * @param i 0 = error, 1 = info, 2 = blank, 3 = warning (exceptions)
      */
-    public void showMessage(int i, String msg) {
+    public void showMessage(MessageType en, String msg) {
         messageLabel.setText(msg);
-        switch(i){
-            case 0:
+        switch(en){
+            case ERROR:
                 messageLabel.setIcon(errorIcon);
                 break;
-            case 1:
+            case INFO:
                 messageLabel.setIcon(infoIcon);
                 break;
-            case 2:
-                messageLabel.setIcon(null);
-                break;
-            case 3:
+            case WARNING:
                 messageLabel.setIcon(warningIcon);
+                break;
+            case BLANK:
+            default:
+                messageLabel.setIcon(null);
                 break;
         }
         messageLabel.setVisible(true);

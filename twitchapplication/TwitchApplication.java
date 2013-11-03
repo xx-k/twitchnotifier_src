@@ -9,6 +9,8 @@ import java.util.*;
  */
 public class TwitchApplication {
 
+    private final String appVersion = "0.7.4";
+    
     private static TwitchApplication twa;
 
     public static TwitchApplication getInstance() {
@@ -97,6 +99,7 @@ public class TwitchApplication {
     private TwitchApplication() {
         twc = new TwitchController();
         twc.loadParams(loadParams());
+        twc.showMessage(TwitchController.MessageType.INFO, "Current version: " +appVersion);
     }
 
     public void saveParams(HashMap<String, String> paramsMap) {

@@ -284,9 +284,9 @@ public class ConfigWindow extends javax.swing.JFrame {
     
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         if(TwitchApplication.getInstance().deleteParams()){
-            twc.showMessage(TwitchController.MessageType.INFO, "Config deleted!");
+            twc.showMessage(TwitchController.MessageState.INFO, "Config deleted!");
         } else {
-            twc.showMessage(TwitchController.MessageType.ERROR, "Unable to delete file!");
+            twc.showMessage(TwitchController.MessageState.ERROR, "Unable to delete file!");
         }
     }//GEN-LAST:event_resetButtonActionPerformed
 

@@ -19,7 +19,7 @@ public class TwitchController {
     private final String trayName = "Twitch Notifier";
     
     
-    public enum MessageType {
+    public enum MessageState {
         INFO, WARNING, ERROR, BLANK;
     }
     
@@ -56,7 +56,7 @@ public class TwitchController {
     /**
      * @param i 0 = error, 1 = info, 2 = blank, 3 = warning (exceptions)
      */
-    public void showMessage(MessageType en, String msg) {
+    public void showMessage(MessageState en, String msg) {
         twv.showMessage(en, msg);
     }
     
@@ -101,7 +101,7 @@ public class TwitchController {
             }
             catch (Exception ex) {
                 twv.enableButton(true);
-                showMessage(MessageType.WARNING, "Unable to show streamers.");
+                showMessage(MessageState.WARNING, "Unable to show streamers.");
                 ex.printStackTrace();
             }
             twv.generateContent(streamers);
@@ -165,7 +165,7 @@ public class TwitchController {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
-            twv.showMessage(MessageType.WARNING, ex.getClass().getName() + ": Could not set layout, using default UI");
+            twv.showMessage(MessageState.WARNING, ex.getClass().getName() + ": Could not set layout, using default UI");
         }
         JFrame.setDefaultLookAndFeelDecorated(true);
         twv = new TwitchView(this, undecoratedWindow);
@@ -187,7 +187,7 @@ public class TwitchController {
 
     public void showOnline(ArrayList<Streamer> onlineStreamers) {
         if (!isLoggedIn) {
-            trayNotify("Please log in first.");
+            trayNotify(MessageState.INFO, "Please log in first.");
             return;
         }
         StringBuilder sb;
@@ -199,7 +199,7 @@ public class TwitchController {
                 sb.append(str.getStreamerName()).append(" (" + str.getViewers() + ")").append("\n");
             }
         }
-        trayNotify(sb.toString());
+        trayNotify(MessageState.INFO, sb.toString());
     }
 
     public void windowParams(){
@@ -255,13 +255,23 @@ public class TwitchController {
         this.disableNotifications = b;
     }
 
-    public void trayNotify(String message) {
+    public void trayNotify(MessageState ms, String message) {
         if(disableNotifications) return;
         if(twv.getTray() == null) return;
         try {
-            twv.trayNotify(trayName, message, TrayIcon.MessageType.INFO);
+            switch(ms){
+                default:
+                case INFO:
+                    twv.trayNotify(trayName, message, TrayIcon.MessageType.INFO);
+                    break;
+                case ERROR:
+                    twv.trayNotify(trayName, message, TrayIcon.MessageType.ERROR);
+                    break;
+                case WARNING:
+                    twv.trayNotify(message, message, TrayIcon.MessageType.WARNING);
+            }
         } catch (NullPointerException ex) {
-            twv.showMessage(MessageType.WARNING, "Cannot display tray notification");
+            twv.showMessage(MessageState.WARNING, "Cannot display tray notification");
         }
     }
     
@@ -284,7 +294,7 @@ public class TwitchController {
         } else if (gd.length >= 1) {
             setLocation((undecoratedWindow ? 1405 : 1315), (undecoratedWindow ? 815 : 775));
         } else {
-            twv.showMessage(MessageType.ERROR, "Unable to detect screens, cannot set window location.");
+            twv.showMessage(MessageState.ERROR, "Unable to detect screens, cannot set window location.");
         }
     }
     

@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class TwitchApplication {
 
-    private final String appVersion = "0.7.4";
+    private final String appVersion = "0.7.5";
     
     private static TwitchApplication twa;
 
@@ -99,7 +99,7 @@ public class TwitchApplication {
     private TwitchApplication() {
         twc = new TwitchController();
         twc.loadParams(loadParams());
-        twc.showMessage(TwitchController.MessageType.INFO, "Current version: " +appVersion);
+        twc.showMessage(TwitchController.MessageState.INFO, "Current version: " +appVersion);
     }
 
     public void saveParams(HashMap<String, String> paramsMap) {

@@ -67,8 +67,8 @@ public class ListPanel extends javax.swing.JPanel {
                     if(counter>0){ // do not notify user first time!
                         String message = list.get(i).getStreamerName() +" just went online!";
                         recentOnline = list.get(i).getStreamerName();
-                        twc.showMessage(TwitchController.MessageType.INFO, message);
-                        twc.trayNotify(message);
+                        twc.showMessage(TwitchController.MessageState.INFO, message);
+                        twc.trayNotify(TwitchController.MessageState.INFO, message);
                     }
                 }
             } else {
@@ -87,8 +87,8 @@ public class ListPanel extends javax.swing.JPanel {
             String str = (String)it.next();
             if(!internalOnlineTrack.contains(str)){
                 it.remove();
-                twc.showMessage(TwitchController.MessageType.INFO, str + " went offline.");
-                twc.trayNotify(str + " went offline.");
+                twc.showMessage(TwitchController.MessageState.INFO, str + " went offline.");
+                twc.trayNotify(TwitchController.MessageState.INFO, str + " went offline.");
                 recentOnline = "";
             }
             
@@ -106,7 +106,7 @@ public class ListPanel extends javax.swing.JPanel {
                         @Override
                         protected String doInBackground() {
                             progressBar.setIndeterminate(true);
-                            twc.showMessage(null, "");
+                            twc.showMessage(TwitchController.MessageState.BLANK, "");
                             twc.update();
                             System.gc();
                             return "Done.";

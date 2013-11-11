@@ -44,6 +44,10 @@ public class ConfigWindow extends javax.swing.JFrame {
         return saveProps;
     }
     
+    public void setAppVersion() {
+        versionLabel.setText("Ver. "+twc.getAppVersion());
+    }
+    
     public void enterProperties(HashMap<String, String> enterMap){
         remTrayCheckbox.setSelected(Boolean.parseBoolean(enterMap.get("DisableNotifications")));
         remUsernameCheckbox.setSelected(Boolean.parseBoolean(enterMap.get("RememberUser")));
@@ -130,6 +134,7 @@ public class ConfigWindow extends javax.swing.JFrame {
         autoLoginCheckbox = new javax.swing.JCheckBox();
         startMinimizedCheckbox = new javax.swing.JCheckBox();
         resetButton = new javax.swing.JButton();
+        versionLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -190,6 +195,11 @@ public class ConfigWindow extends javax.swing.JFrame {
         remTrayCheckbox.setText("Disable tray notifcations");
 
         decoratedCheckbox.setText("Hide Window Border");
+        decoratedCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                decoratedCheckboxActionPerformed(evt);
+            }
+        });
 
         remPositionCheckbox.setText("Remember position");
 
@@ -240,15 +250,19 @@ public class ConfigWindow extends javax.swing.JFrame {
             }
         });
 
+        versionLabel.setText("Current version:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(resetButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(resizeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(resetButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(resizeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(versionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -260,12 +274,15 @@ public class ConfigWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(resizeButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resetButton))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(resizeButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(resetButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(versionLabel))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -283,11 +300,8 @@ public class ConfigWindow extends javax.swing.JFrame {
 
     
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
-        if(TwitchApplication.getInstance().deleteParams()){
-            twc.showMessage(TwitchController.MessageState.INFO, "Config deleted!");
-        } else {
-            twc.showMessage(TwitchController.MessageState.ERROR, "Unable to delete file!");
-        }
+        TwitchApplication.getInstance().deleteParams();
+        twc.showMessage(TwitchController.MessageState.INFO, "Will try to delete config file");
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void popoutVideoCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popoutVideoCheckboxActionPerformed
@@ -298,7 +312,10 @@ public class ConfigWindow extends javax.swing.JFrame {
         remUsernameCheckbox.setEnabled(!autoLoginCheckbox.isSelected());
     }//GEN-LAST:event_autoLoginCheckboxActionPerformed
 
-    
+    private void decoratedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decoratedCheckboxActionPerformed
+        twc.showMessage(TwitchController.MessageState.INFO, "Restart program for change to take effect.");
+    }//GEN-LAST:event_decoratedCheckboxActionPerformed
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoLoginCheckbox;
@@ -314,12 +331,14 @@ public class ConfigWindow extends javax.swing.JFrame {
     private javax.swing.JCheckBox startMinimizedCheckbox;
     private javax.swing.JButton timerChangeButton;
     private javax.swing.JComboBox timerChangeList;
+    private javax.swing.JLabel versionLabel;
     // End of variables declaration//GEN-END:variables
 
     public void allowUsernameToBeRemembered(boolean b) {
-        //FIXME: In logout transisiton, if a username is remembered, the "remember username" checkbox becomes activated upon caret update
-        // Proposed: Rewrite check logic
-        remUsernameCheckbox.setEnabled(b); 
+        remUsernameCheckbox.setEnabled(b);
+        if(autoLoginCheckbox.isSelected()){
+            remUsernameCheckbox.setEnabled(false);
+        }
         if(!b){
             remUsernameCheckbox.setSelected(false);
             autoLoginCheckbox.setEnabled(false);

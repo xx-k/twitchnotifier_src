@@ -22,7 +22,6 @@ public class LoginPanel extends javax.swing.JPanel {
     public LoginPanel(TwitchController twc) {
         initComponents();
         progressBar.setVisible(false);
-        infoLabel.setVisible(false);
         this.twc = twc;
     }
     
@@ -32,6 +31,7 @@ public class LoginPanel extends javax.swing.JPanel {
      */
     public void enableControl(boolean b) {
         goButton.setEnabled(b);
+        usernameTextField.setEnabled(b);
     }
 
     /**
@@ -47,7 +47,6 @@ public class LoginPanel extends javax.swing.JPanel {
         goButton = new javax.swing.JButton();
         usernameTextField = new javax.swing.JTextField();
         loadingLabel = new javax.swing.JLabel();
-        infoLabel = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
 
         jLabel1.setText("Twitch Username:");
@@ -72,9 +71,6 @@ public class LoginPanel extends javax.swing.JPanel {
 
         loadingLabel.setText("    ");
 
-        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/info.png"))); // NOI18N
-        infoLabel.setText("      ");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -84,7 +80,6 @@ public class LoginPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(usernameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -112,43 +107,25 @@ public class LoginPanel extends javax.swing.JPanel {
                     .addComponent(goButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69))
+                .addGap(105, 105, 105))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void goButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goButtonActionPerformed
-        class ButtonWorker extends SwingWorker<String, Object> {
-
-            @Override
-            protected String doInBackground() {
-                progressBar.setVisible(true);
-                progressBar.setIndeterminate(true);
-                infoLabel.setText("Building list...");
-                infoLabel.setVisible(true);
-                twc.fireUsername(usernameTextField.getText());
-                return "Done.";
-            }
-
-            @Override
-            protected void done() {
-                progressBar.setVisible(false);
-                infoLabel.setVisible(false);
-            }
-        }
-
-        new ButtonWorker().execute();
+        buildList();
     }//GEN-LAST:event_goButtonActionPerformed
 
     private void usernameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTextFieldActionPerformed
-          class FieldWorker extends SwingWorker<String, Object> {
+        buildList();
+    }//GEN-LAST:event_usernameTextFieldActionPerformed
+
+    private void buildList(){
+        class FieldWorker extends SwingWorker<String, Object> {
             @Override
             protected String doInBackground() {
                 progressBar.setVisible(true);
                 progressBar.setIndeterminate(true);
-                infoLabel.setText("Building list...");
-                infoLabel.setVisible(true);
+                twc.showMessage(TwitchController.MessageState.INFO, "Building list...");
                 twc.fireUsername(usernameTextField.getText());
                 return "Done.";
             }
@@ -156,19 +133,17 @@ public class LoginPanel extends javax.swing.JPanel {
             @Override
             protected void done() {
                 progressBar.setVisible(false);
-                infoLabel.setVisible(false);
             }
         }
         new FieldWorker().execute();
-    }//GEN-LAST:event_usernameTextFieldActionPerformed
-
+    }
     private void usernameTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_usernameTextFieldCaretUpdate
+        // True when it can be remembered
         twc.allowUsernameToBeRemembered(!usernameTextField.getText().isEmpty());
     }//GEN-LAST:event_usernameTextFieldCaretUpdate
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton goButton;
-    private javax.swing.JLabel infoLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel loadingLabel;
     private javax.swing.JProgressBar progressBar;

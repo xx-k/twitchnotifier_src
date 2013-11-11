@@ -18,6 +18,9 @@ public class TwitchController {
     private final String clientID = "q4dpzyshmhid2kjx5u0n6s34odf533k";
     private final String trayName = "Twitch Notifier";
     
+    private String appVersion = "";
+
+
     
     public enum MessageState {
         INFO, WARNING, ERROR, BLANK;
@@ -90,13 +93,13 @@ public class TwitchController {
     }
 
     public void fireUsername(String text) {
-        twv.hideLabel();
         this.username = text;
         twv.enableButton(false);
         ArrayList<Streamer> streamers = generateOnlineList(username);
         if (streamers != null) {
             isLoggedIn = true;
             try {
+                showMessage(MessageState.BLANK, "");
                 twv.setContentPanel(1);
             }
             catch (Exception ex) {
@@ -126,6 +129,16 @@ public class TwitchController {
         showConfigWindow(false);
         twv.setConfigIcon(false);
     }
+    
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+        cfw.setAppVersion();
+    }
+    
     
     int i = 0;
     public void loadParams(HashMap<String, String> params){
@@ -340,63 +353,4 @@ public class TwitchController {
         }
         return screen;
     }
-    
-    /** The following code was written by 
-     * MadProgrammer (http://stackoverflow.com/users/992484/madprogrammer)
-     * on Stackoverflow, question 14431467 **/
-    public Rectangle getSafeScreenBounds(Point pos) {
-
-        Rectangle bounds = getScreenBoundsAt(pos);
-        Insets insets = getScreenInsetsAt(pos);
-
-        bounds.x += insets.left;
-        bounds.y += insets.top;
-        bounds.width -= (insets.left + insets.right);
-        bounds.height -= (insets.top + insets.bottom);
-
-        return bounds;
-
-    }
-
-    public Insets getScreenInsetsAt(Point pos) {
-      GraphicsDevice gd = getGraphicsDeviceAt(pos);
-      Insets insets = null;
-      if (gd != null) {
-        insets = Toolkit.getDefaultToolkit().getScreenInsets(gd.getDefaultConfiguration());
-      }
-      return insets;
-    }
-
-    public  Rectangle getScreenBoundsAt(Point pos) {
-          GraphicsDevice gd = getGraphicsDeviceAt(pos);
-          Rectangle bounds = null;
-          if (gd != null) {
-            bounds = gd.getDefaultConfiguration().getBounds();
-          }
-          return bounds;
-    }
-
-    public GraphicsDevice getGraphicsDeviceAt(Point pos) {
-        GraphicsDevice device = null;
-
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice lstGDs[] = ge.getScreenDevices();
-
-        ArrayList<GraphicsDevice> lstDevices = new ArrayList<>(lstGDs.length);
-
-        for (GraphicsDevice gd : lstGDs) {
-          GraphicsConfiguration gc = gd.getDefaultConfiguration();
-          Rectangle screenBounds = gc.getBounds();
-          if (screenBounds.contains(pos)) {
-            lstDevices.add(gd);
-          }
-        }
-        if (lstDevices.size() > 0) {
-          device = lstDevices.get(0);
-        } else {
-          device = ge.getDefaultScreenDevice();
-        }
-        return device;
-    }
-    /** END OF CODE BLOCK **/
 }

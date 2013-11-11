@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class TwitchApplication {
 
-    private final String appVersion = "0.7.5";
+    private final String appVersion = "0.7.6";
     
     private static TwitchApplication twa;
 
@@ -21,6 +21,7 @@ public class TwitchApplication {
     }
     
     private final String configFilename = System.getProperty("user.home")+System.getProperty("file.separator")+"twitch.conf";
+                                          
     
     
     private String username = "";
@@ -45,17 +46,10 @@ public class TwitchApplication {
         }
             TwitchApplication twiapp = getInstance();
     }
-
-    public boolean deleteParams() {
-        File f = null;
-
-        try {
-            f = new File(configFilename);
-            return f.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+    
+    public void deleteParams() {
+        File f = new File(configFilename);
+        f.deleteOnExit();
     }
     
     
@@ -74,7 +68,7 @@ public class TwitchApplication {
         InputStream is = null;
 
         try {
-            File f = new File(System.getProperty("user.home")+System.getProperty("file.separator")+"twitch.conf");
+            File f = new File(configFilename);
             is = new FileInputStream(f);
         } catch (Exception e) {
             is = null;
@@ -82,7 +76,7 @@ public class TwitchApplication {
 
         try {
             if (is == null) {
-                is = getClass().getResourceAsStream(System.getProperty("user.home")+System.getProperty("file.separator")+"twitch.conf");
+                is = getClass().getResourceAsStream(configFilename);
             }
             props.load(is);
         } catch (Exception e) {}
@@ -99,7 +93,7 @@ public class TwitchApplication {
     private TwitchApplication() {
         twc = new TwitchController();
         twc.loadParams(loadParams());
-        twc.showMessage(TwitchController.MessageState.INFO, "Current version: " +appVersion);
+        twc.setAppVersion(appVersion);
     }
 
     public void saveParams(HashMap<String, String> paramsMap) {
@@ -117,7 +111,7 @@ public class TwitchApplication {
                 props.setProperty("PosX", "");
                 props.setProperty("PosY", "");
             }
-            File f = new File(System.getProperty("user.home")+System.getProperty("file.separator")+"twitch.conf");
+            File f = new File(configFilename);
             OutputStream out = new FileOutputStream(f);
             props.store(out, "");
         } catch (Exception e) {

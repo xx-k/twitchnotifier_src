@@ -86,13 +86,14 @@ public class JSONModel {
             System.out.println("getFollowers threw");
             ex.printStackTrace();
             System.out.println("--User was: " + user);
-            System.out.println("JSON String was:" + jsonstring);
+            System.out.println("JSON String was: " + jsonstring);
             if(jsonobj == null)
                 System.out.println("JSON object was null");
             if(follows == null)
                 System.out.println("JSON Array was null");
-            if (ex.getClass().getName().contains("NullPointerException")) {
-                twc.showMessage(TwitchController.MessageState.ERROR, "Username not found!");
+            else if (ex.getClass().getName().contains("NullPointerException")) {
+                //FIXME: "Username not found" has to be determined by some other method - what does the API return if no username was found?
+               // twc.showMessage(TwitchController.MessageState.ERROR, "Username not found!");
             } else {
                 twc.showMessage(TwitchController.MessageState.WARNING, ex.getClass().getName() + " was thrown");
             }

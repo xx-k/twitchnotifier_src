@@ -164,11 +164,11 @@ public class TwitchView extends javax.swing.JFrame {
     private int xd = 0;
     private void setTrayIcon(boolean b) {
         if(trayIcon != null)
-        if (++xd > 0) {
-            trayIcon.setImage((b ? trayOn.getImage() : trayOff.getImage()));
-        } else if (xd > 2) {
-            xd = 0;
-        }
+            if (++xd > 0) {
+                trayIcon.setImage((b ? trayOn.getImage() : trayOff.getImage()));
+            } else if (xd > 2) {
+                xd = 0;
+            }
     }
     
     private void buildTray(){
@@ -203,7 +203,7 @@ public class TwitchView extends javax.swing.JFrame {
         }
         trayIcon.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                trayAction(MouseInfo.getPointerInfo().getLocation());
+                trayAction();
             }
         });
         restoreItem.addActionListener(new ActionListener() {
@@ -230,25 +230,17 @@ public class TwitchView extends javax.swing.JFrame {
                 System.exit(3);
             }
         });
-        
     }
     
     public void trayNotify(String messageTitle, String message, java.awt.TrayIcon.MessageType type){
         trayIcon.displayMessage(messageTitle, message, type);
     }
 
-    private void trayAction(Point mousePosition) {
-        Rectangle bounds = twc.getSafeScreenBounds(mousePosition);
-        Point point = mousePosition;
-        int x = point.x;
-        int y = point.y;
-        if (y < bounds.y) {
-            y = bounds.y;
-        } else if (y > bounds.y + bounds.height) {
-            y = bounds.y + bounds.height;
-        }
+    private void trayAction() {
+        boolean atTray = MouseUtility.getInstance().mouseAtTray(MouseInfo.getPointerInfo().getLocation());
+        System.out.println(atTray);
         String streamer = listPanel.getRecentOnline();
-        if (y < bounds.height && !streamer.isEmpty()) {
+        if (atTray && !streamer.isEmpty()) {
             String twitchURL = "http://www.twitch.tv/" + streamer;
             System.out.println("Opening browser URL: " + twitchURL);
             if (Desktop.isDesktopSupported()) {
@@ -292,10 +284,6 @@ public class TwitchView extends javax.swing.JFrame {
         
     public void enableButton(boolean b){
         loginPanel.enableControl(b);
-    }
-    
-    public void hideLabel(){
-        messageLabel.setVisible(false);
     }
     
     private void initLayers(){

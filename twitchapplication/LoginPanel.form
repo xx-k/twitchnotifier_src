@@ -21,7 +21,6 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="infoLabel" alignment="0" min="-2" pref="158" max="-2" attributes="0"/>
                           <Component id="progressBar" alignment="0" min="-2" pref="158" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="usernameTextField" min="-2" pref="158" max="-2" attributes="0"/>
@@ -58,9 +57,7 @@
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="progressBar" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="infoLabel" min="-2" pref="30" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="105" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -88,14 +85,6 @@
     <Component class="javax.swing.JLabel" name="loadingLabel">
       <Properties>
         <Property name="text" type="java.lang.String" value="    "/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="infoLabel">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/res/info.png"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="      "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JProgressBar" name="progressBar">

@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class TwitchApplication {
 
-    private final String appVersion = "0.7.6";
+    private final String appVersion = "0.7.7";
     
     private static TwitchApplication twa;
 
@@ -21,11 +21,6 @@ public class TwitchApplication {
     }
     
     private final String configFilename = System.getProperty("user.home")+System.getProperty("file.separator")+"twitch.conf";
-                                          
-    
-    
-    private String username = "";
-    private boolean disableNotifications = true;
 
     /**
      * @param args the command line arguments

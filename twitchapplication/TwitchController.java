@@ -6,6 +6,7 @@ package twitchapplication;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 
 /**
@@ -68,12 +69,11 @@ public class TwitchController {
     }
     
     public ArrayList<Streamer> generateOnlineList(String username) {
-        ArrayList<String> follows = jsm.getFollowers(username);
-        ArrayList<Streamer> onlineList = jsm.getOnline(follows);
+        List<String> follows = jsm.getFollowers(username);
+        List<Streamer> onlineList = jsm.getOnline(follows);
         ArrayList<Streamer> streamers = new ArrayList<>();
         ArrayList<String> alreadyAdded = new ArrayList<>();
-        int i;
-        int j;
+        int i, j;
         for (i = 0; i < follows.size(); i++) { // i is index at "follows" list
             if (!alreadyAdded.contains(follows.get(i))) {
                 for (j = 0; j < onlineList.size(); j++) { // j is index at "online" list

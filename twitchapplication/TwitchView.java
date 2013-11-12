@@ -238,7 +238,6 @@ public class TwitchView extends javax.swing.JFrame {
 
     private void trayAction() {
         boolean atTray = MouseUtility.getInstance().mouseAtTray(MouseInfo.getPointerInfo().getLocation());
-        System.out.println(atTray);
         String streamer = listPanel.getRecentOnline();
         if (atTray && !streamer.isEmpty()) {
             String twitchURL = "http://www.twitch.tv/" + streamer;

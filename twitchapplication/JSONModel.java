@@ -98,7 +98,7 @@ public class JSONModel {
             sb = new StringBuilder();
             switch (req) {
                 case READ_FOLLOWERS:
-                    jsonString = readUrl("https://api.twitch.tv/kraken/users/" + username + "/follows/channels");
+                    jsonString = readUrl(baseURL+"/users/" + username + "/follows/channels");
                     break;
                 case READ_ONLINE:
                     for (int i = 0; i < followedChannels.size(); i++) {
@@ -107,7 +107,7 @@ public class JSONModel {
                             sb.append(",");
                         }
                     }
-                    jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb);
+                    jsonString = readUrl(baseURL+"/streams?channel=" + sb);
                     break;
             }
             jsonObj = new JSONObject(jsonString);
@@ -131,16 +131,15 @@ public class JSONModel {
                 }
                 switch (req) {
                     case READ_FOLLOWERS:
-                        jsonString = readUrl("https://api.twitch.tv/kraken/users/" + username + "/follows/channels?limit=" + totalElements);
-                        jsonObj = new JSONObject(jsonString);
+                        jsonString = readUrl(baseURL + "/users/" + username + "/follows/channels?limit=" + totalElements);
                         break;
 
                     case READ_ONLINE:
-                        jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb + "?limit=" + totalElements);
-                        jsonObj = new JSONObject(jsonString);
+                        jsonString = readUrl(baseURL + "/streams?channel=" + sb + "?limit=" + totalElements);
                         break;
                 }
             }
+            jsonObj = new JSONObject(jsonString);
             if(req == request.READ_FOLLOWERS) {
                 array = jsonObj.getJSONArray("follows");
             } else {
@@ -154,7 +153,10 @@ public class JSONModel {
                     String streamerName = (String) channel.get("display_name");
                     int viewerCount = streamer.getInt("viewers");
                     String streamTitle = (String) channel.get("status");
-                    String gameTitle = (String) streamer.get("game");
+                    String gameTitle = "";
+                    if(streamer.get("game") != org.json.JSONObject.NULL) {
+                        gameTitle = (String) streamer.get("game");
+                    }
                     Streamer addStreamer = new Streamer(streamerName, true, gameTitle, streamTitle, viewerCount);
                     resultList.add(addStreamer);
                     continue;

@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class TwitchApplication {
 
-    private final String appVersion = "0.7.7.ostemad";
+    private final String appVersion = "0.7.7.9";
     
     private static TwitchApplication twa;
 

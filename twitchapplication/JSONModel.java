@@ -98,7 +98,7 @@ public class JSONModel {
             sb = new StringBuilder();
             switch (req) {
                 case READ_FOLLOWERS:
-                    jsonString = readUrl(baseURL+"/users/" + username + "/follows/channels");
+                    jsonString = readUrl("https://api.twitch.tv/kraken/users/" + username + "/follows/channels");
                     break;
                 case READ_ONLINE:
                     for (int i = 0; i < followedChannels.size(); i++) {
@@ -107,7 +107,7 @@ public class JSONModel {
                             sb.append(",");
                         }
                     }
-                    jsonString = readUrl(baseURL+"/streams?channel=" + sb);
+                    jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb);
                     break;
             }
             jsonObj = new JSONObject(jsonString);
@@ -131,17 +131,20 @@ public class JSONModel {
                 }
                 switch (req) {
                     case READ_FOLLOWERS:
-                        jsonString = readUrl(baseURL+"/users/" + username + "/follows/channels?limit=" + totalElements);
+                        jsonString = readUrl("https://api.twitch.tv/kraken/users/" + username + "/follows/channels?limit=" + totalElements);
                         jsonObj = new JSONObject(jsonString);
-                        array = jsonObj.getJSONArray("follows");
                         break;
 
                     case READ_ONLINE:
-                        jsonString = readUrl(baseURL+"/streams?channel=" + sb + "?limit=" + totalElements);
+                        jsonString = readUrl("https://api.twitch.tv/kraken/streams?channel=" + sb + "?limit=" + totalElements);
                         jsonObj = new JSONObject(jsonString);
-                        array = jsonObj.getJSONArray("streams");
                         break;
                 }
+            }
+            if(req == request.READ_FOLLOWERS) {
+                array = jsonObj.getJSONArray("follows");
+            } else {
+                array = jsonObj.getJSONArray("streams");
             }
             resultList = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
@@ -153,9 +156,10 @@ public class JSONModel {
                     String streamTitle = (String) channel.get("status");
                     String gameTitle = (String) streamer.get("game");
                     Streamer addStreamer = new Streamer(streamerName, true, gameTitle, streamTitle, viewerCount);
-                } else {
-                    resultList.add((String) channel.get("name"));
+                    resultList.add(addStreamer);
+                    continue;
                 }
+                resultList.add((String) channel.get("name"));
             }
             res = result.SUCESSFUL;
             return resultList;
@@ -180,6 +184,7 @@ public class JSONModel {
 
                 default:
                     twc.showMessage(TwitchController.MessageState.WARNING, ex.getClass().getName() + " was thrown!");
+                    System.out.println("jsonString was:" + jsonString);
                     ex.printStackTrace();
                     break;
             }

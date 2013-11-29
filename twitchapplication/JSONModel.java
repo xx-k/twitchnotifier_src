@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 /**
  *
  * @author Toby
@@ -79,7 +77,9 @@ public class JSONModel {
     }
     
     private String decodeString(String d) {
-        return new StringEscapeUtils().unescapeHtml4(d);
+        //Fixme: Has to decode properly, trouble with included source
+        //return new StringEscapeUtils().unescapeHtml4(d);
+        return d;
     }
 
     public ArrayList<Streamer> generateList(String username) {

@@ -10,36 +10,22 @@ package twitchapplication;
  */
 public class Streamer {
     private boolean status = false;
-    private String streamerName = "";
+    private String channelName = "";
+    private String displayName = "";
     private int viewers = 0;
     private String streamTitle = "";
     private String gameTitle = "";
     
-    /**
-     * Create a Streamer wrapper object
-     * @param name The name of the streamer
-     * @param status Online/Offline status
-     */
-    public Streamer(String name, boolean status){
-        this.status = status;
-        this.streamerName = name;
-        this.viewers = 0;
-    }
-    
-    public Streamer(String name, boolean status, String gameTitle, String streamTitle, int viewers){
+
+    public Streamer(String displayName, String channelName, boolean status, String gameTitle, String streamTitle, int viewers){
         this.viewers = viewers;
         this.status = status;
         this.gameTitle = gameTitle;
         this.streamTitle = streamTitle;
-        this.streamerName = name;
+        this.displayName = displayName;
+        this.channelName = channelName;
     }
     
-    public Streamer(String name, boolean status, int viewers){
-        this.status = status;
-        this.streamerName = name;
-        this.viewers = viewers;
-    }
-
     /**
      * Get the online/offline status of the streamer.
      * @return 
@@ -56,6 +42,13 @@ public class Streamer {
         this.viewers = viewers;
     }
     
+    public String getChannelName(){
+        return channelName;
+    }
+    
+    public String getDisplayName(){
+        return displayName;
+    }
     
     
     /**
@@ -67,11 +60,11 @@ public class Streamer {
     }
 
     public String getStreamerName() {
-        return streamerName;
+        return displayName;
     }
 
     public void setStreamerName(String streamerName) {
-        this.streamerName = streamerName;
+        this.displayName = streamerName;
     }
 
     public String getStreamTitle() {
@@ -92,6 +85,6 @@ public class Streamer {
     
     @Override
     public String toString(){
-        return "Streamer " + streamerName + "@" + Integer.toHexString(hashCode());
+        return "Streamer " + displayName + "@" + Integer.toHexString(hashCode());
     }
 }

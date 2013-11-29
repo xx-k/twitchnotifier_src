@@ -69,27 +69,7 @@ public class TwitchController {
     }
     
     public ArrayList<Streamer> generateOnlineList(String username) {
-        List<String> follows = jsm.getFollowers(username);
-        List<Streamer> onlineList = jsm.getOnline(follows);
-        ArrayList<Streamer> streamers = new ArrayList<>();
-        ArrayList<String> alreadyAdded = new ArrayList<>();
-        int i, j;
-        for (i = 0; i < follows.size(); i++) { // i is index at "follows" list
-            if (!alreadyAdded.contains(follows.get(i))) {
-                for (j = 0; j < onlineList.size(); j++) { // j is index at "online" list
-                    if (follows.get(i).equalsIgnoreCase(onlineList.get(j).getStreamerName())) {
-                        //streamers.add(new Streamer(follows.get(i), true));
-                        streamers.add(onlineList.get(j));
-                        alreadyAdded.add(follows.get(i));
-                    }
-                }
-                if(!alreadyAdded.contains(follows.get(i))){
-                    streamers.add(new Streamer(follows.get(i), false));
-                }
-                alreadyAdded.add(follows.get(i));
-            }
-        }
-        return streamers;
+        return jsm.generateList(username);
     }
 
     public void fireUsername(String text) {

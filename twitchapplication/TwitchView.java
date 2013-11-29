@@ -246,8 +246,9 @@ public class TwitchView extends javax.swing.JFrame {
                 try {
                     Desktop.getDesktop().browse(new java.net.URI(twitchURL));
                 } catch (Exception ex) {
+                    showMessage(MessageState.ERROR, "Could not open streamers page!");
+                    ex.printStackTrace();
                 }
-                showMessage(MessageState.ERROR, "Could not open streamers page!");
             }
             listPanel.clearRecentOnline();
             return;

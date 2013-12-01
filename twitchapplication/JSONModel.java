@@ -145,7 +145,7 @@ public class JSONModel {
                     streamersQuery.append(",");
                 }
             }
-
+            
             
             streamersURL = baseURL + "/streams?channel=" + streamersQuery + "?limit=" + 100;
             streamersJSONString = readUrl(streamersURL);
@@ -168,7 +168,7 @@ public class JSONModel {
                     }
                 }
             }
-  
+            
 
             
             
@@ -196,7 +196,6 @@ public class JSONModel {
 //                    throw new Exception();
 //                }
 //            }
-
             return newResultList;
         } catch (Exception ex) {
             switch (res) {

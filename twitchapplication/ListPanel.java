@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.Timer;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 /**
  *
@@ -23,20 +24,21 @@ public class ListPanel extends javax.swing.JPanel {
     private int timeout = 30;
     
     private boolean popoutVideo;
-    
+
     private ArrayList<String> internalTracker = new ArrayList<>();
     private ArrayList<String> internalOffline;
     private ArrayList<Streamer> internalOnline;
     
+    private ArrayList<Streamer> internalCopy;
+    
+    
     //Store streamer going online, to be used when opening stream from tray
     private String recentOnline = "";
-    
+       
     // Arrows in list
     private final ImageIcon downIcon = new ImageIcon(getClass().getResource("/res/down.png"));
     private final ImageIcon upIcon = new ImageIcon(getClass().getResource("/res/up.png"));
-    
-    // font
-    private final java.awt.Font scrollerFont = new java.awt.Font("Tahoma", 1, 11);
+  
     
     /**
      * Creates new form ListPanel
@@ -46,8 +48,9 @@ public class ListPanel extends javax.swing.JPanel {
     public ListPanel(final TwitchController twc) {
         this.twc = twc;
         initComponents();
-        offlinePanel.setPreferredSize(new Dimension(200, 90));
-        onlinePanel.setPreferredSize(new Dimension(200, 90));
+        
+        onlineScrollPane.setHorizontalScrollBar(null);
+        offlineScrollPane.setHorizontalScrollBar(null);   
     }
 
     /**
@@ -58,7 +61,8 @@ public class ListPanel extends javax.swing.JPanel {
     public void generateLists(ArrayList<Streamer> list) {
         internalOnline = new ArrayList<>();
         internalOffline = new ArrayList<>();
-        int i;
+        internalCopy = list;
+        int i = 0;
         for(i = 0; i < list.size(); i++){
             if(list.get(i).isStatus()){
                 internalOnline.add(list.get(i)); // add to online list
@@ -122,8 +126,9 @@ public class ListPanel extends javax.swing.JPanel {
             }, timeout * 1000, timeout * 1000);
         }
         
-        drawOnline(0);
-        drawOffline(0);
+        drawList(list);
+        
+        
         twc.setTrayTooltip(internalOnline.size() + " streamers online");
         counter++;
     }
@@ -137,6 +142,38 @@ public class ListPanel extends javax.swing.JPanel {
             timer.purge();
             timer = null;
         }
+    }
+    
+    private void drawList(ArrayList<Streamer> list){
+        onlineContentPane.removeAll();
+        offlineContentPane.removeAll();
+        
+        GridLayout onlineLayout = new GridLayout(internalOnline.size(), 1);
+        GridLayout offlineLayout = new GridLayout(internalOffline.size(), 1);
+        
+        onlineContentPane.setLayout(onlineLayout);
+        offlineContentPane.setLayout(offlineLayout);
+
+        for(Streamer strX : list) {
+            if(strX.isStatus()){
+                JLabel urlLabel = generateURLLabel(strX.getDisplayName(), strX.getViewers());
+                String gameTitle = (strX.getGameTitle().isEmpty()) ? "" : " @ " + strX.getGameTitle();
+                urlLabel.setToolTipText(strX.getStreamTitle()+gameTitle);
+                onlineContentPane.add(urlLabel);
+            } else {
+                JLabel urlLabel = generateURLLabel(strX.getDisplayName(), 0);
+                offlineContentPane.add(urlLabel);
+            }
+        }
+        
+        
+        offlineContentPane.revalidate();
+        offlineContentPane.repaint();
+        onlineContentPane.repaint();
+        onlineContentPane.revalidate();
+        
+ 
+        
     }
     
     public void resetCounter(){
@@ -157,108 +194,37 @@ public class ListPanel extends javax.swing.JPanel {
     public void clearRecentOnline(){
         recentOnline = "";
     }
-    
-    private void drawOnline(int x){
-        GridLayout blayOnline = new GridLayout(7, 1);
-        onlinePanel.setLayout(blayOnline);
-        onlinePanel.removeAll();
-        // the x indicates black position start.
-        if(x!=0){ // are we at the top?
-                JLabel upLabel = new JLabel("Go Up");
-                upLabel.setFont(scrollerFont);
-                upLabel.addMouseListener(new MoveListEntry(0, x-5));
-                upLabel.setIcon(upIcon);
-                onlinePanel.add(upLabel);
+   
+    private URLLabel generateJLabel(String text, boolean online) {
+        URLLabel genLabel = new URLLabel();
+        genLabel.setText(text);
+        if (online) {
+            genLabel.setIcon(new ImageIcon(getClass().getResource("/res/accept.png")));
+        } else {
+            genLabel.setIcon(new ImageIcon(getClass().getResource("/res/cross.png")));
         }
-        int i = x; // make sure index is right from the start
-        int j = 0; // entry counter
-        int limit = 5;
-        if(i>0) limit = 4; //if i is greater than 0, we need to break at 4 instead of 5, because black position start takes top.
-        for(; i<internalOnline.size(); i++){
-            String url = "http://www.twitch.tv/" + internalOnline.get(i).getStreamerName();
-            url = url + (popoutVideo ? "/popout" : "");
-
-            URLLabel label = generateJLabel(internalOnline.get(i).getStreamerName() + " (" + internalOnline.get(i).getViewers() + ")", true);
-            label.setURL(url);
-            StringBuilder sb = new StringBuilder("\""+internalOnline.get(i).getStreamTitle()+"\"");
-            if(!internalOnline.get(i).getGameTitle().isEmpty()){
-                sb.append(" @ "+internalOnline.get(i).getGameTitle());
-            }
-            label.setToolTipText(sb.toString());
-            onlinePanel.add(label);
-            j++; //label added, increment entry counter
-
-            if (j == limit && (internalOnline.size()>5+x)){ // first is if we're at 'limit' its time to go down AND second if we've done 'limit' and there's more stuff to draw
-                JLabel downLabel = new JLabel("Go down");
-                downLabel.addMouseListener(new MoveListEntry(0, x+5)); // increase black entry by 5
-                downLabel.setFont(scrollerFont);
-                downLabel.setIcon(downIcon);
-                onlinePanel.add(downLabel);
-                break;
-            }
-        }
-        onlinePanel.repaint();
-        onlinePanel.revalidate();
+        genLabel.setVisible(true);
+        return genLabel;
     }
     
-    private void drawOffline(int x){
-        GridLayout blayOffline = new GridLayout(7, 1);
-        offlinePanel.setLayout(blayOffline);
-        offlinePanel.removeAll();
-        // the x indicates black position start.
-        if(x!=0){ // are we at the top?
-                JLabel upLabel = new JLabel("Go Up");
-                upLabel.setFont(scrollerFont);
-                upLabel.addMouseListener(new MoveListEntry(1, x-5));
-                upLabel.setIcon(upIcon);
-                offlinePanel.add(upLabel);
+    private JLabel generateURLLabel(String streamerName, int viewers) {
+        String url = "http://www.twitch.tv/" + streamerName;
+        url = url + (popoutVideo ? "/popout" : "");
+        URLLabel label;
+        if (viewers > 0) {
+            label = generateJLabel(streamerName + " (" + viewers + ")", true);
+        } else {
+            label = generateJLabel(streamerName, false);
         }
-        int i = x;
-        int j = 0;
-        int limit = 5;
-        if(i>0) limit = 4; //if i is greater than 0, we need to break at 4 instead of 5, because black entry takes top.
-        for (; i < internalOffline.size(); i++) {
-            String url = "http://www.twitch.tv/" + internalOffline.get(i);
-            url = url + (popoutVideo ? "/popout" : "");
-
-            URLLabel label = generateJLabel(internalOffline.get(i), false);
-            label.setURL(url);
-            offlinePanel.add(label);
-            j++;
-
-            if (j == limit && (internalOffline.size()>5+x)){ // first is if we're at 'limit' its time to go down , second if we've done 'limit' and there's more stuff to draw
-                JLabel downLabel = new JLabel("Go down");
-                downLabel.addMouseListener(new MoveListEntry(1, x+5));
-                downLabel.setFont(scrollerFont);
-                downLabel.setIcon(downIcon);
-                offlinePanel.add(downLabel);
-                break;
-            }
-        }
-        offlinePanel.repaint();
-        offlinePanel.revalidate();
+        label.setBorder(new EmptyBorder(1,3,1,0));
+        label.setURL(url);
+        return label;
     }
     
     public void setTimer(int timer){
         this.timeout = timer;
     }
-    
-   private class MoveListEntry extends MouseAdapter {
-        private int positionStart; // black entry index
-        private int list; // 0 for online, 1 for offline
-        public MoveListEntry(int list, int posStart){
-            this.list = list;
-            positionStart = posStart;
-        }
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if(list==0){
-                drawOnline(positionStart);
-            } else {
-                drawOffline(positionStart);
-            }
-        }
-    }
+
 
     public void setPopoutVideo(boolean popoutVideo) {
         this.popoutVideo = popoutVideo;
@@ -266,8 +232,7 @@ public class ListPanel extends javax.swing.JPanel {
     
     public void redrawList(){
         if(internalOnline != null && internalOffline != null){
-            drawOffline(0);
-            drawOnline(0);
+            drawList(internalCopy);
         }
     }
 
@@ -281,11 +246,12 @@ public class ListPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         logoutButton = new javax.swing.JButton();
-        onlinePanel = new javax.swing.JPanel();
-        offlinePanel = new javax.swing.JPanel();
         progressBar = new javax.swing.JProgressBar();
         pauseSelect = new javax.swing.JCheckBox();
-        testLabel = new javax.swing.JLabel();
+        onlineScrollPane = new javax.swing.JScrollPane();
+        onlineContentPane = new javax.swing.JPanel();
+        offlineScrollPane = new javax.swing.JScrollPane();
+        offlineContentPane = new javax.swing.JPanel();
 
         logoutButton.setText("Logout");
         logoutButton.addActionListener(new java.awt.event.ActionListener() {
@@ -294,76 +260,65 @@ public class ListPanel extends javax.swing.JPanel {
             }
         });
 
-        onlinePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Online", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 1, 10), new java.awt.Color(0, 0, 0))); // NOI18N
-
-        javax.swing.GroupLayout onlinePanelLayout = new javax.swing.GroupLayout(onlinePanel);
-        onlinePanel.setLayout(onlinePanelLayout);
-        onlinePanelLayout.setHorizontalGroup(
-            onlinePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 181, Short.MAX_VALUE)
-        );
-        onlinePanelLayout.setVerticalGroup(
-            onlinePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 58, Short.MAX_VALUE)
-        );
-
-        offlinePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Offline", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 1, 10), new java.awt.Color(0, 0, 0))); // NOI18N
-
-        javax.swing.GroupLayout offlinePanelLayout = new javax.swing.GroupLayout(offlinePanel);
-        offlinePanel.setLayout(offlinePanelLayout);
-        offlinePanelLayout.setHorizontalGroup(
-            offlinePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        offlinePanelLayout.setVerticalGroup(
-            offlinePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 58, Short.MAX_VALUE)
-        );
-
         pauseSelect.setText("Pause Update");
 
-        testLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        testLabel.setText("         ");
+        onlineScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Online", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 10), new java.awt.Color(0, 0, 0))); // NOI18N
+
+        javax.swing.GroupLayout onlineContentPaneLayout = new javax.swing.GroupLayout(onlineContentPane);
+        onlineContentPane.setLayout(onlineContentPaneLayout);
+        onlineContentPaneLayout.setHorizontalGroup(
+            onlineContentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 217, Short.MAX_VALUE)
+        );
+        onlineContentPaneLayout.setVerticalGroup(
+            onlineContentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 113, Short.MAX_VALUE)
+        );
+
+        onlineScrollPane.setViewportView(onlineContentPane);
+
+        offlineScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Offline", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 10), new java.awt.Color(0, 0, 0))); // NOI18N
+
+        javax.swing.GroupLayout offlineContentPaneLayout = new javax.swing.GroupLayout(offlineContentPane);
+        offlineContentPane.setLayout(offlineContentPaneLayout);
+        offlineContentPaneLayout.setHorizontalGroup(
+            offlineContentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 223, Short.MAX_VALUE)
+        );
+        offlineContentPaneLayout.setVerticalGroup(
+            offlineContentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 113, Short.MAX_VALUE)
+        );
+
+        offlineScrollPane.setViewportView(offlineContentPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(onlinePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(offlinePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(testLabel))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(logoutButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pauseSelect)))
-                        .addGap(0, 88, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(logoutButton)
+                .addGap(28, 28, 28)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(pauseSelect)
+                .addContainerGap(71, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(onlineScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(offlineScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(logoutButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(logoutButton)
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pauseSelect))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(onlinePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(offlinePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(testLabel)
-                .addGap(28, 28, 28))
+                    .addComponent(onlineScrollPane)
+                    .addComponent(offlineScrollPane)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -371,23 +326,14 @@ public class ListPanel extends javax.swing.JPanel {
         twc.setContentPanel(0);
     }//GEN-LAST:event_logoutButtonActionPerformed
 
-    private URLLabel generateJLabel(String text, boolean online) {
-        URLLabel genLabel = new URLLabel();
-        genLabel.setText(text);
-        if (online) {
-            genLabel.setIcon(new ImageIcon(getClass().getResource("/res/accept.png")));
-        } else {
-            genLabel.setIcon(new ImageIcon(getClass().getResource("/res/cross.png")));
-        }
-        genLabel.setVisible(true);
-        return genLabel;
-    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton logoutButton;
-    private javax.swing.JPanel offlinePanel;
-    private javax.swing.JPanel onlinePanel;
+    private javax.swing.JPanel offlineContentPane;
+    private javax.swing.JScrollPane offlineScrollPane;
+    private javax.swing.JPanel onlineContentPane;
+    private javax.swing.JScrollPane onlineScrollPane;
     private javax.swing.JCheckBox pauseSelect;
     private javax.swing.JProgressBar progressBar;
-    private javax.swing.JLabel testLabel;
     // End of variables declaration//GEN-END:variables
 }

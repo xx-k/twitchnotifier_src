@@ -98,9 +98,10 @@ public class TwitchView extends javax.swing.JFrame {
                     .addComponent(configButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(layeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
-                    .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addComponent(layeredPane)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -257,11 +258,6 @@ public class TwitchView extends javax.swing.JFrame {
         twc.showOnline(listPanel.getOnline());
     }
 
-    public void fireUsername(String username){
-        twc.generateOnlineList(username);
-        loginPanel.enableControl(false);
-    }
-    
     public void setContentPanel(int i){
         switch(i) {
             case 0:
@@ -286,12 +282,15 @@ public class TwitchView extends javax.swing.JFrame {
         loginPanel.enableControl(b);
     }
     
+    private twitchapplication.ListPanel listPanel;
+    private twitchapplication.LoginPanel loginPanel;
+    
     private void initLayers(){
         loginPanel = new twitchapplication.LoginPanel(twc);
         listPanel = new twitchapplication.ListPanel(twc);
         loginPanel.setBounds(0, 0, 380, 170);
         layeredPane.add(loginPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        listPanel.setBounds(0, 0, 400, 250);
+        listPanel.setBounds(0, 0, 430, 170);
         layeredPane.add(listPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
     }
     
@@ -302,8 +301,7 @@ public class TwitchView extends javax.swing.JFrame {
         return null;
     }
     
-    private twitchapplication.ListPanel listPanel;
-    private twitchapplication.LoginPanel loginPanel;
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton configButton;
     private javax.swing.JLayeredPane layeredPane;

@@ -1,6 +1,5 @@
 package twitchapplication;
 
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -8,10 +7,6 @@ import javax.swing.JOptionPane;
 import twitchapplication.TwitchController.MessageState;
 
 
-/**
- *
- * @author Toby
- */
 public class TwitchView extends javax.swing.JFrame {
     
     private TwitchController twc;
@@ -99,19 +94,21 @@ public class TwitchView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
+                        .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
-                    .addComponent(layeredPane)))
+                    .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(twitchLogo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(minimizeButton))
-                    .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
@@ -288,9 +285,9 @@ public class TwitchView extends javax.swing.JFrame {
     private void initLayers(){
         loginPanel = new twitchapplication.LoginPanel(twc);
         listPanel = new twitchapplication.ListPanel(twc);
-        loginPanel.setBounds(0, 0, 380, 170);
+        loginPanel.setBounds(0, 0, 430, 168);
         layeredPane.add(loginPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        listPanel.setBounds(0, 0, 430, 170);
+        listPanel.setBounds(0, 0, 430, 168);
         layeredPane.add(listPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
     }
     

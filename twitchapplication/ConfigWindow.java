@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package twitchapplication;
 
 import java.awt.Color;
 import java.util.HashMap;
 import javax.swing.WindowConstants;
 
-/**
- *
- * @author Toby
- */
 public class ConfigWindow extends javax.swing.JFrame {
 
     private TwitchController twc;
@@ -45,7 +37,11 @@ public class ConfigWindow extends javax.swing.JFrame {
     }
     
     public void setAppVersion() {
-        versionLabel.setText("Ver. "+twc.getAppVersion());
+        String versionNumber = twc.getAppVersion();
+//        if(UpdateUtility.getInstance().getUpdateAvailable(versionNumber)) {
+//            System.out.println("yolo"); // add warning / error icon, paint in bold, add tooltip
+//        }
+        versionLabel.setText("Ver. "+versionNumber);
     }
     
     public void enterProperties(HashMap<String, String> enterMap){

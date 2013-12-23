@@ -112,14 +112,14 @@ public class LoginPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void goButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goButtonActionPerformed
-        buildList();
+        fireUsername();
     }//GEN-LAST:event_goButtonActionPerformed
 
     private void usernameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTextFieldActionPerformed
-        buildList();
+        fireUsername();
     }//GEN-LAST:event_usernameTextFieldActionPerformed
 
-    private void buildList(){
+    private void fireUsername(){
         class FieldWorker extends SwingWorker<String, Object> {
             @Override
             protected String doInBackground() {

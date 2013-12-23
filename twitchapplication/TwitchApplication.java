@@ -3,13 +3,9 @@ package twitchapplication;
 import java.io.*;
 import java.util.*;
 
-/**
- *
- * @author Toby
- */
 public class TwitchApplication {
 
-    private final String appVersion = "0.7.8.1";
+    private final String appVersion = "0.7.9";
     
     private static TwitchApplication twa;
 

@@ -1,20 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package twitchapplication;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import java.util.Timer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-/**
- *
- * @author Toby
- */
 public class ListPanel extends javax.swing.JPanel {
 
     private TwitchController twc;
@@ -148,7 +139,8 @@ public class ListPanel extends javax.swing.JPanel {
         onlineContentPane.removeAll();
         offlineContentPane.removeAll();
         
-        GridLayout onlineLayout = new GridLayout(internalOnline.size(), 1);
+        GridLayout onlineLayout = new GridLayout(
+                (internalOnline.size() < 4) ? internalOnline.size()+3 : internalOnline.size(), 1); // ternary is because grid messes up (by placing evenly), in a list suited for at least 5 elements ( still needs a bit of fine-tuning)
         GridLayout offlineLayout = new GridLayout(internalOffline.size(), 1);
         
         onlineContentPane.setLayout(onlineLayout);
@@ -161,19 +153,15 @@ public class ListPanel extends javax.swing.JPanel {
                 urlLabel.setToolTipText(strX.getStreamTitle()+gameTitle);
                 onlineContentPane.add(urlLabel);
             } else {
-                JLabel urlLabel = generateURLLabel(strX.getDisplayName(), 0);
+                JLabel urlLabel = generateURLLabel(strX.getDisplayName(), -1); // -1 to ensure a difference can be made from newly online streamers
                 offlineContentPane.add(urlLabel);
             }
         }
-        
         
         offlineContentPane.revalidate();
         offlineContentPane.repaint();
         onlineContentPane.repaint();
         onlineContentPane.revalidate();
-        
- 
-        
     }
     
     public void resetCounter(){
@@ -211,7 +199,7 @@ public class ListPanel extends javax.swing.JPanel {
         String url = "http://www.twitch.tv/" + streamerName;
         url = url + (popoutVideo ? "/popout" : "");
         URLLabel label;
-        if (viewers > 0) {
+        if (viewers > -1) {
             label = generateJLabel(streamerName + " (" + viewers + ")", true);
         } else {
             label = generateJLabel(streamerName, false);

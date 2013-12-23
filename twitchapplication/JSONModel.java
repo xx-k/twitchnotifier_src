@@ -10,14 +10,9 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- *
- * @author Toby
- */
 public class JSONModel {
 
     private enum request {
-
         READ_FOLLOWERS, READ_ONLINE;
     }
 
@@ -33,8 +28,7 @@ public class JSONModel {
     private TwitchController twc;
     private result res;
     private final String baseURL = "https://api.twitch.tv/kraken";
-    
-    
+
     public JSONModel(TwitchController twc) {
         this.twc = twc;
         res = result.WAITING;
@@ -52,14 +46,14 @@ public class JSONModel {
                 res = result.USERNAME_NOT_FOUND;
                 return notFound;
             }
-            reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            InputStreamReader isr = new InputStreamReader(conn.getInputStream(), "UTF-8");
+            reader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
             reader.close();
-
             conn.disconnect();
             return sb.toString();
         } catch (Exception ex) {
@@ -75,7 +69,7 @@ public class JSONModel {
             }
         }
     }
-    
+
     private String decodeString(String d) {
         //Fixme: Has to decode properly, trouble with included source
         //return new StringEscapeUtils().unescapeHtml4(d);
@@ -90,21 +84,21 @@ public class JSONModel {
 
         res = result.WAITING;
 
-        
+
         String followedURL =
                 baseURL + "/users/" + username + "/follows/channels?limit=" + 100;
         String followedJSONString = "";
         JSONObject followedJSONObject;
         JSONArray followedJSONArray;
-        
+
         String streamersURL = "";
         String streamersJSONString;
         JSONObject streamersJSONObject;
         JSONArray streamersJSONArray;
-        
+
         ArrayList<Streamer> newResultList;
         try {
- 
+
             followedJSONString = readUrl(followedURL);
             followedJSONObject = new JSONObject(followedJSONString);
             if (followedJSONObject.has("error")) {
@@ -115,12 +109,12 @@ public class JSONModel {
 
 
             newResultList = new ArrayList<>();
-            
+
             //First we generate a list of streamers, all offline
-            for(int i = 0; i < followedJSONArray.length(); i++) {
+            for (int i = 0; i < followedJSONArray.length(); i++) {
                 JSONObject streamer = followedJSONArray.getJSONObject(i);
                 JSONObject channel = streamer.getJSONObject("channel");
-                
+
                 String channelName = (String) channel.getString("name");
                 String displayName = (String) channel.getString("display_name");
                 String gameTitle = "";
@@ -131,56 +125,53 @@ public class JSONModel {
                 if (channel.get("status") != org.json.JSONObject.NULL) {
                     streamTitle = decodeString((String) channel.get("status"));
                 }
-                
-                Streamer addStreamer = new Streamer(displayName, channelName, 
-                                            false, gameTitle, streamTitle, 0);
+
+                Streamer addStreamer = new Streamer(displayName, channelName,
+                        false, gameTitle, streamTitle, -1); // -1 to ensure a difference can be made from newly online streamers
                 newResultList.add(addStreamer);
             }
-            
+
             StringBuilder streamersQuery = new StringBuilder();
-            for(int i = 0; i < newResultList.size(); i++) {
+            for (int i = 0; i < newResultList.size(); i++) {
                 String appendName = newResultList.get(i).getChannelName();
                 streamersQuery.append(appendName);
-                if(i != newResultList.size() - 1){
+                if (i != newResultList.size() - 1) {
                     streamersQuery.append(",");
                 }
             }
-            
-            
-            streamersURL = baseURL + "/streams?channel=" + streamersQuery + "?limit=" + 100;
+
+
+            streamersURL = baseURL + "/streams?channel=" + streamersQuery + ",null?limit=" + 100;
             streamersJSONString = readUrl(streamersURL);
             streamersJSONObject = new JSONObject(streamersJSONString);
             streamersJSONArray = streamersJSONObject.getJSONArray("streams");
-            
+
             // now we have an array with online channels, time to mark online ones...
 
             // onlineChannelIndex => j
             // "offline"ChannelIndex => i
-            for(int j = 0; j < streamersJSONArray.length(); j++){
+            for (int j = 0; j < streamersJSONArray.length(); j++) {
                 JSONObject streamer = streamersJSONArray.getJSONObject(j);
                 int viewers = streamer.getInt("viewers");
                 JSONObject channel = streamer.getJSONObject("channel");
                 String channelName = channel.getString("name");
-                for(int i = 0; i < newResultList.size(); i++) {
-                    if(newResultList.get(i).getChannelName().equals(channelName)){
+                for (int i = 0; i < newResultList.size(); i++) {
+                    if (newResultList.get(i).getChannelName().equals(channelName)) {
                         newResultList.get(i).setStatus(true);
                         newResultList.get(i).setViewers(viewers);
                     }
                 }
             }
-            
 
-            
-            
 
-/*            The following code determines how many objects there are in the array.
- *            This is going to be used to get more than just 100 streamers in a single request
- *              (if there are that many objects to be processed)
- * 
- *              Proposed is to loop until the total amount has been reached, 
- *              increasing the offset each loop.
- *                  Step 1 though: find someone with over 100 followed channels.
-*/            
+            /*            The following code determines how many objects there are in the array.
+             *            This is going to be used to get more than just 100 streamers in a single request
+             *              (if there are that many objects to be processed)
+             * 
+             *              Proposed is to loop until the total amount has been reached, 
+             *              increasing the offset each loop.
+             *                  Step 1 though: find someone with over 100 followed channels.
+             */
 //            switch (req) {
 //                case READ_FOLLOWERS:
 //                    totalElements = jsonObj.getInt("_total");

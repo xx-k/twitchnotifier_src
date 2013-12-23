@@ -10,10 +10,6 @@ import java.awt.event.MouseEvent;
 import java.net.URI;
 import javax.swing.JLabel;
 
-/**
- *
- * @author Toby
- */
 public class URLLabel extends JLabel {
     
     private String URL;

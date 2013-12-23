@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package twitchapplication;
 
 import java.awt.GraphicsConfiguration;
@@ -13,10 +9,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 
-/**
- *
- * @author Toby
- */
+
 public class MouseUtility {
 
     private static MouseUtility singleton;
@@ -48,8 +41,7 @@ public class MouseUtility {
      * (http://stackoverflow.com/users/992484/madprogrammer) on Stackoverflow,
      * question 14431467 *
      */
-    public Rectangle getSafeScreenBounds(Point pos) {
-
+    private Rectangle getSafeScreenBounds(Point pos) {
         Rectangle bounds = getScreenBoundsAt(pos);
         Insets insets = getScreenInsetsAt(pos);
 
@@ -59,10 +51,9 @@ public class MouseUtility {
         bounds.height -= (insets.top + insets.bottom);
 
         return bounds;
-
     }
 
-    public Insets getScreenInsetsAt(Point pos) {
+    private Insets getScreenInsetsAt(Point pos) {
         GraphicsDevice gd = getGraphicsDeviceAt(pos);
         Insets insets = null;
         if (gd != null) {
@@ -71,7 +62,7 @@ public class MouseUtility {
         return insets;
     }
 
-    public Rectangle getScreenBoundsAt(Point pos) {
+    private Rectangle getScreenBoundsAt(Point pos) {
         GraphicsDevice gd = getGraphicsDeviceAt(pos);
         Rectangle bounds = null;
         if (gd != null) {

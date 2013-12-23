@@ -1,18 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package twitchapplication;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
 
-/**
- *
- * @author Toby
- */
 public class TwitchController {
 
     private final String twitchAPIVersion = "application/vnd.twitchtv.v2+json";
@@ -282,6 +273,7 @@ public class TwitchController {
         cfw.setVisible(false);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
+        MonitorUtility.getInstance().windowLocation();
         if (gd.length > 1) {
             setLocation((undecoratedWindow ? -585 : -605), (undecoratedWindow ? 680 : 630));
         } else if (gd.length >= 1) {

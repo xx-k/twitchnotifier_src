@@ -86,8 +86,14 @@ public class TwitchApplication {
         twc.loadParams(loadParams());
         twc.setAppVersion(appVersion);
         UpdateUtility.getInstance().setController(twc)
-                                   .setCurrentVersion(appVersion)
-                                   .checkVersion();
+                                   .setCurrentVersion(appVersion);
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                UpdateUtility.getInstance().checkVersion();
+            }
+        });
+        t.run();
     }
 
     public void saveParams(HashMap<String, String> paramsMap) {

@@ -1,14 +1,15 @@
 package twitchapplication;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.vertx.java.core.*;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.http.HttpClient;
-import org.vertx.java.core.http.HttpClientResponse;
 
 
-public class UpdateUtility {
+public class UpdateUtility  {
     
     private static UpdateUtility singleton;
     
@@ -42,8 +43,6 @@ public class UpdateUtility {
     private UpdateStatus currentStatus = UpdateStatus.TIMEOUT_UPDATE;
     private Timer timeoutTimer;
     private int timeoutTime = 3 * 1000; // 3000 ms timeout
-    
-    private final Vertx vertx = VertxFactory.newVertx();
     
     public UpdateUtility(){
         initTimers();
@@ -111,28 +110,35 @@ public class UpdateUtility {
         if (ctr == null || currentVersion.isEmpty() || currentVersion == null) {
             throw new IllegalStateException("Invalid state");
         }
-        HttpClient httpClient = vertx.createHttpClient();
-        httpClient.exceptionHandler(new Handler() {
-                        @Override
-                        public void handle(Object e) {} // just ignore whatever exceptions that are thrown, they're not important right now
-                    })
-                  .setHost(serverUrl)
-                  .setPort(serverPort)
-                  .getNow(requestPath, new Handler<HttpClientResponse>() {
-                    @Override
-                    public void handle(final HttpClientResponse res) {
-                        res.bodyHandler(new Handler<Buffer>() {
-                            @Override
-                            public void handle(Buffer buf) {
-                                String[] versInfo = new String[2];
-                                StringBuilder sb = new StringBuilder(Integer.toString(res.statusCode())).append(" ").append(res.statusMessage());
-                                versInfo[0] = sb.toString();
-                                versInfo[1] = buf.toString();
-                                updateVersion(versInfo);
-                            }
-                        });
-                    }
-                });
+         BufferedReader reader = null;
+        String notFound = "{\"error\":\"Not Found\",\"status\":404,\"message\":\"User does not exist\"}";
+        try {
+            URL url = new URL("http", serverUrl, serverPort, requestPath);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            if (conn.getResponseCode() == 404) {
+                currentStatus = UpdateStatus.INVALID_RESPONSE;
+            }
+            InputStreamReader isr = new InputStreamReader(conn.getInputStream(), "UTF-8");
+            reader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            reader.close();
+            conn.disconnect();
+            String[] strArray = new String[2];
+            strArray[0] = ""+conn.getResponseCode();
+            strArray[1] = sb.toString();
+            updateVersion(strArray);
+        } catch (Exception ex) {
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (Exception ex) {}
+            }
+        }
     }
 
     

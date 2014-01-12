@@ -83,7 +83,6 @@ public class JSONModel {
 
         res = result.WAITING;
 
-
         String followedURL =
                 baseURL + "/users/" + username + "/follows/channels?limit=" + 100;
         String nextFollowedURL;

@@ -82,6 +82,10 @@ public class TwitchController {
         }
     }
     
+    public TwitchView getView(){
+        return twv;
+    }
+    
     public void setUsername(String un) {
         twv.setUsername(un);
     }

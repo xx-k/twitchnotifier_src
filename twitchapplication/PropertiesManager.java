@@ -13,7 +13,8 @@ public class PropertiesManager {
      {"StartMinimized", "false"},
      {"PopoutVideo", "false"},
      {"RememberPosition", "false"},
-     {"UndecoratedWindow", "true"}};
+     {"UndecoratedWindow", "true"},
+     {"PromptForUpdate", "true"}};
     
     public static String[][] getProperties(){
         return properties;

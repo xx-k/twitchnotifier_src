@@ -169,6 +169,19 @@ public class TwitchView extends javax.swing.JFrame {
             }
     }
     
+    public javax.swing.ImageIcon getIcon(MessageState iconType) {
+        switch(iconType) {
+            case ERROR:
+                return errorIcon;
+            case INFO:
+                return infoIcon;
+            case WARNING:
+                return warningIcon;
+        }
+        
+        return null;
+    }
+    
     private void buildTray(){
         if(!tray.isSupported()){
             showMessage(MessageState.ERROR, "OS does not support tray icons");

@@ -5,7 +5,7 @@ import java.util.*;
 
 public class TwitchApplication {
 
-    private final String appVersion = "0.8.0";
+    private final String appVersion = "0.8.1";
     
     private static TwitchApplication twa;
 
@@ -86,14 +86,9 @@ public class TwitchApplication {
         twc.loadParams(loadParams());
         twc.setAppVersion(appVersion);
         UpdateUtility.getInstance().setController(twc)
-                                   .setCurrentVersion(appVersion);
-        Thread t = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                UpdateUtility.getInstance().checkVersion();
-            }
-        });
-        t.run();
+                                   .setCurrentVersion(appVersion)
+                                   .startCheck();
+        
     }
 
     public void saveParams(HashMap<String, String> paramsMap) {

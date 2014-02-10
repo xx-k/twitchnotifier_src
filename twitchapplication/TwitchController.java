@@ -11,16 +11,11 @@ public class TwitchController {
     private final String trayName = "Twitch Notifier";
     
     private String appVersion = "";
-
-
-    
-    public enum MessageState {
-        INFO, WARNING, ERROR, BLANK;
-    }
     
     private TwitchView twv;
     private ConfigWindow cfw;
     private JSONModel jsm;
+    private MessageManager msm;
     
     private boolean isLoggedIn = false;
     
@@ -52,7 +47,11 @@ public class TwitchController {
      * @param i 0 = error, 1 = info, 2 = blank, 3 = warning (exceptions)
      */
     public void showMessage(MessageState en, String msg) {
-        twv.showMessage(en, msg);
+        msm.queueMessage(en, msg);
+    }
+    
+     public void showMessage(MessageState en, String msg, int displayTime) {
+        msm.queueMessage(en, msg, displayTime);
     }
     
     public void allowUsernameToBeRemembered(boolean b){
@@ -153,7 +152,7 @@ public class TwitchController {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
-            twv.showMessage(MessageState.WARNING, ex.getClass().getName() + ": Could not set layout, using default UI");
+            msm.queueMessage(MessageState.WARNING, ex.getClass().getName() + ": Could not set layout, using default UI");
         }
         JFrame.setDefaultLookAndFeelDecorated(true);
         twv = new TwitchView(this, undecoratedWindow);
@@ -163,6 +162,7 @@ public class TwitchController {
         } else {
             resetLocation();
         }
+        setupMessageManager();
         windowParams();
         cfw.enterProperties(map);
         cfw.setVisible(false);
@@ -171,6 +171,11 @@ public class TwitchController {
         } else {
             twv.setVisible(true);
         }
+    }
+    
+    private void setupMessageManager() {
+        msm = new MessageManager(this);
+        msm.setView(twv);
     }
 
     public void showOnline(ArrayList<Streamer> onlineStreamers) {
@@ -259,7 +264,7 @@ public class TwitchController {
                     twv.trayNotify(message, message, TrayIcon.MessageType.WARNING);
             }
         } catch (NullPointerException ex) {
-            twv.showMessage(MessageState.WARNING, "Cannot display tray notification");
+            msm.queueMessage(MessageState.WARNING, "Cannot display tray notification");
         }
     }
     
@@ -283,7 +288,7 @@ public class TwitchController {
         } else if (gd.length >= 1) {
             setLocation((undecoratedWindow ? 1405 : 1315), (undecoratedWindow ? 815 : 775));
         } else {
-            twv.showMessage(MessageState.ERROR, "Unable to detect screens, cannot set window location.");
+            msm.queueMessage(MessageState.ERROR, "Unable to detect screens, cannot set window location.");
         }
     }
     

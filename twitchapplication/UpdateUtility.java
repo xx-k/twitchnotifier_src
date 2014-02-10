@@ -32,7 +32,7 @@ public class UpdateUtility  {
     private final String updateUrl = "https://github.com/xx-k/twitchnotifier_public";
     
     //private final String serverUrl = "localhost";
-    private final String serverUrl = "ec2-54-216-201-2.eu-west-1.compute.amazonaws.com";
+    private final String serverUrl = "87.60.137.185";
     private final String requestPath = "/request-version";
     private final int serverPort = 8000;
     
@@ -106,12 +106,12 @@ public class UpdateUtility  {
     }
     
     
-    public void checkVersion() {
-        if (ctr == null || currentVersion.isEmpty() || currentVersion == null) {
-            throw new IllegalStateException("Invalid state");
-        }
+    private void checkVersion() {
+            if (ctr == null || currentVersion.isEmpty() || currentVersion == null) {
+                throw new IllegalStateException("Invalid state");
+            }
          BufferedReader reader = null;
-        String notFound = "{\"error\":\"Not Found\",\"status\":404,\"message\":\"User does not exist\"}";
+        String notFound = "404 Not found";
         try {
             URL url = new URL("http", serverUrl, serverPort, requestPath);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -139,6 +139,16 @@ public class UpdateUtility  {
                 } catch (Exception ex) {}
             }
         }
+    }
+    
+    public void startCheck() {
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                checkVersion();
+            }
+        });
+        t.run();
     }
 
     

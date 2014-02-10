@@ -3,8 +3,8 @@ package twitchapplication;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
-import twitchapplication.TwitchController.MessageState;
+import javax.swing.*;
+
 
 
 public class TwitchView extends javax.swing.JFrame {
@@ -12,15 +12,11 @@ public class TwitchView extends javax.swing.JFrame {
     private TwitchController twc;
     private TrayIcon trayIcon;
     
-    // Define icons
-    private final javax.swing.ImageIcon errorIcon = new javax.swing.ImageIcon(getClass().getResource("/res/error.png"));
-    private final javax.swing.ImageIcon infoIcon = new javax.swing.ImageIcon(getClass().getResource("/res/info.png"));
-    private final javax.swing.ImageIcon warningIcon = new javax.swing.ImageIcon(getClass().getResource("/res/warning.png"));
     private final javax.swing.ImageIcon windowIcon = new javax.swing.ImageIcon(getClass().getResource("/res/icon.png"));
-    private final javax.swing.ImageIcon configOpenIcon = new javax.swing.ImageIcon(getClass().getResource("/res/config_open.png"));
-    private final javax.swing.ImageIcon configCloseIcon = new javax.swing.ImageIcon(getClass().getResource("/res/config_close.png"));
     private final javax.swing.ImageIcon trayOn = new javax.swing.ImageIcon(getClass().getResource("/res/tray_on.png"), "Twitch Notifier");
     private final javax.swing.ImageIcon trayOff = new javax.swing.ImageIcon(getClass().getResource("/res/tray_off.png"), "Twitch Notifier");
+    private final javax.swing.ImageIcon configOpenIcon = new javax.swing.ImageIcon(getClass().getResource("/res/config_open.png"));
+    private final javax.swing.ImageIcon configCloseIcon = new javax.swing.ImageIcon(getClass().getResource("/res/config_close.png"));
     
     private final SystemTray tray = SystemTray.getSystemTray();
     
@@ -34,7 +30,7 @@ public class TwitchView extends javax.swing.JFrame {
         initLayers();
         setResizable(false);
         this.setIconImage(windowIcon.getImage());
-        messageLabel.setVisible(false);
+        messagePanel.setMessageVisibility(false);
         setContentPanel(0);
     }
 
@@ -50,8 +46,8 @@ public class TwitchView extends javax.swing.JFrame {
         twitchLogo = new javax.swing.JLabel();
         layeredPane = new javax.swing.JLayeredPane();
         minimizeButton = new javax.swing.JButton();
-        messageLabel = new javax.swing.JLabel();
         configButton = new javax.swing.JButton();
+        messagePanelContainer = new javax.swing.JLayeredPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -71,9 +67,6 @@ public class TwitchView extends javax.swing.JFrame {
             }
         });
 
-        messageLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/error.png"))); // NOI18N
-        messageLabel.setText("    ");
-
         configButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/config_open.png"))); // NOI18N
         configButton.setText("Configure");
         configButton.addActionListener(new java.awt.event.ActionListener() {
@@ -92,28 +85,29 @@ public class TwitchView extends javax.swing.JFrame {
                     .addComponent(minimizeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(configButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(messagePanelContainer)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(messagePanelContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(twitchLogo)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(twitchLogo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(minimizeButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(minimizeButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(layeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(messageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-                    .addComponent(configButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(configButton)))
+                .addGap(8, 8, 8))
         );
 
         pack();
@@ -172,11 +166,11 @@ public class TwitchView extends javax.swing.JFrame {
     public javax.swing.ImageIcon getIcon(MessageState iconType) {
         switch(iconType) {
             case ERROR:
-                return errorIcon;
+                return messagePanel.errorIcon;
             case INFO:
-                return infoIcon;
+                return messagePanel.infoIcon;
             case WARNING:
-                return warningIcon;
+                return messagePanel.warningIcon;
         }
         
         return null;
@@ -251,7 +245,7 @@ public class TwitchView extends javax.swing.JFrame {
         boolean atTray = MouseUtility.getInstance().mouseAtTray(MouseInfo.getPointerInfo().getLocation());
         String streamer = listPanel.getRecentOnline();
         if (atTray && !streamer.isEmpty()) {
-            String twitchURL = "http://www.twitch.tv/" + streamer;
+            String twitchURL = "http://www.twitch.tv/" + streamer + (listPanel.getPopoutVideo() ? "/popout" : "");
             System.out.println("Opening browser URL: " + twitchURL);
             if (Desktop.isDesktopSupported()) {
                 try {
@@ -294,10 +288,19 @@ public class TwitchView extends javax.swing.JFrame {
     
     private twitchapplication.ListPanel listPanel;
     private twitchapplication.LoginPanel loginPanel;
+    private twitchapplication.MessagePanel messagePanel;
+
     
     private void initLayers(){
         loginPanel = new twitchapplication.LoginPanel(twc);
         listPanel = new twitchapplication.ListPanel(twc);
+        messagePanel = new twitchapplication.MessagePanel(twc);
+        
+        messagePanel.setBounds(0, 0, 430, 38);
+        messagePanelContainer.add(messagePanel);
+        messagePanelContainer.moveToFront(messagePanel);
+                
+        
         loginPanel.setBounds(0, 0, 430, 168);
         layeredPane.add(loginPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         listPanel.setBounds(0, 0, 430, 168);
@@ -315,33 +318,20 @@ public class TwitchView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton configButton;
     private javax.swing.JLayeredPane layeredPane;
-    private javax.swing.JLabel messageLabel;
+    private javax.swing.JLayeredPane messagePanelContainer;
     private javax.swing.JButton minimizeButton;
     private javax.swing.JLabel twitchLogo;
     // End of variables declaration//GEN-END:variables
 
-    /**
-     * @param i 0 = error, 1 = info, 2 = blank, 3 = warning (exceptions)
-     */
     public void showMessage(MessageState en, String msg) {
-        messageLabel.setText(msg);
-        switch(en){
-            case ERROR:
-                messageLabel.setIcon(errorIcon);
-                break;
-            case INFO:
-                messageLabel.setIcon(infoIcon);
-                break;
-            case WARNING:
-                messageLabel.setIcon(warningIcon);
-                break;
-            case BLANK:
-            default:
-                messageLabel.setIcon(null);
-                break;
-        }
-        messageLabel.setVisible(true);
+        messagePanel.showMessage(en, msg);
+        messagePanel.setMessageParameters(255);
     }
+    
+    public void showMessage(int fadeLevel, MessageState en, String msg) {
+        messagePanel.showMessage(en, msg);
+        messagePanel.setMessageParameters(fadeLevel);
+    }    
 
     public void generateContent(ArrayList<Streamer> list) {
         listPanel.generateLists(list);

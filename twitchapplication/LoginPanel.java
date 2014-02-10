@@ -125,7 +125,7 @@ public class LoginPanel extends javax.swing.JPanel {
             protected String doInBackground() {
                 progressBar.setVisible(true);
                 progressBar.setIndeterminate(true);
-                twc.showMessage(TwitchController.MessageState.INFO, "Building list...");
+                twc.showMessage(MessageState.INFO, "Building list...");
                 twc.fireUsername(usernameTextField.getText());
                 return "Done.";
             }

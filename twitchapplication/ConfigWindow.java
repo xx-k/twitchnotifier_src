@@ -331,7 +331,7 @@ public class ConfigWindow extends javax.swing.JFrame {
     
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         TwitchApplication.getInstance().deleteParams();
-        twc.showMessage(TwitchController.MessageState.INFO, "Will try to delete config file");
+        twc.showMessage(MessageState.INFO, "Will try to delete config file");
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void popoutVideoCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popoutVideoCheckboxActionPerformed
@@ -343,7 +343,7 @@ public class ConfigWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_autoLoginCheckboxActionPerformed
 
     private void decoratedCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decoratedCheckboxActionPerformed
-        twc.showMessage(TwitchController.MessageState.INFO, "Restart program for change to take effect.");
+        twc.showMessage(MessageState.INFO, "Restart program for change to take effect.");
     }//GEN-LAST:event_decoratedCheckboxActionPerformed
 
     
@@ -402,21 +402,21 @@ public class ConfigWindow extends javax.swing.JFrame {
         updateLinkPanel.setLayout(new java.awt.GridLayout(1, 1));
         switch(status) {
             case NO_UPDATE:
-                labelIcon = twc.getView().getIcon(TwitchController.MessageState.BLANK);
+                labelIcon = twc.getView().getIcon(MessageState.BLANK);
                 tooltip = "No new update";
                 break;
             case NEW_UPDATE:
-                labelIcon = twc.getView().getIcon(TwitchController.MessageState.INFO);
+                labelIcon = twc.getView().getIcon(MessageState.INFO);
                 tooltip = "New update found!";
                 newVersion = true;
                 if(updateCheckbox.isSelected()) promptUser();
                 break;
             case TIMEOUT_UPDATE:
-                labelIcon = twc.getView().getIcon(TwitchController.MessageState.WARNING);
+                labelIcon = twc.getView().getIcon(MessageState.WARNING);
                 tooltip = "Version server response timed out...";
                 break;
             case INVALID_RESPONSE:
-                labelIcon = twc.getView().getIcon(TwitchController.MessageState.ERROR);
+                labelIcon = twc.getView().getIcon(MessageState.ERROR);
                 tooltip = "Received invalid server response!";
             default:
                 System.out.println(status);

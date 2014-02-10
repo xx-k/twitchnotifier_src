@@ -69,7 +69,7 @@ public class JSONModel {
                 try {
                     reader.close();
                 } catch (IOException ex) {
-                    twc.showMessage(TwitchController.MessageState.WARNING, ex.getClass().getName() + ": could not close HTTP stream!");
+                    twc.showMessage(MessageState.WARNING, ex.getClass().getName() + ": could not close HTTP stream!");
                 }
             }
         }
@@ -171,7 +171,7 @@ public class JSONModel {
                 if(totalChannels < 100) {
                     finished = true;
                 } else {
-                    twc.showMessage(TwitchController.MessageState.INFO, "Building list... (Above 100 followers, please wait!)");
+                    twc.showMessage(MessageState.INFO, "Building list... (Above 100 followers, please wait!)");
                     followedURL = nextFollowedURL;
                 }
             }
@@ -179,23 +179,23 @@ public class JSONModel {
         } catch (Exception ex) {
             switch (res) {
                 case TWITCH_OFFLINE:
-                    twc.showMessage(TwitchController.MessageState.WARNING, ex.getClass().getName() + ": Unable to open Twitch TV!");
+                    twc.showMessage(MessageState.WARNING, ex.getClass().getName() + ": Unable to open Twitch TV!");
                     break;
 
                 case USERNAME_NOT_FOUND:
-                    twc.showMessage(TwitchController.MessageState.ERROR, "Username was not found!");
+                    twc.showMessage(MessageState.ERROR, "Username was not found!");
                     break;
 
                 case CHANNEL_OVERFLOW:
-                    twc.showMessage(TwitchController.MessageState.ERROR, "Current version only supports up to 100 online channels.");
+                    twc.showMessage(MessageState.ERROR, "Current version only supports up to 100 online channels.");
                     break;
 
                 case INTERNAL_ERROR:
-                    twc.showMessage(TwitchController.MessageState.WARNING, "Application error, please contact developer!");
+                    twc.showMessage(MessageState.WARNING, "Application error, please contact developer!");
                     break;
 
                 default:
-                    twc.showMessage(TwitchController.MessageState.WARNING, ex.getClass().getName() + " was thrown!");
+                    twc.showMessage(MessageState.WARNING, ex.getClass().getName() + " was thrown!");
                     System.out.println("jsonString was:" + followedJSONString);
                     ex.printStackTrace();
                     break;

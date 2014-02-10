@@ -1,7 +1,6 @@
 package twitchapplication;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -84,7 +83,7 @@ public class UpdateUtility  {
                 currentStatus = versionComparison(currentVersion, v[1]);
             }
         }
-        ctr.getConfigWindow().setUpdate(currentStatus);
+        ctr.handleUpdate(currentStatus);
     }
     
     
@@ -98,7 +97,7 @@ public class UpdateUtility  {
         char[] oldArray = oldVersion.toCharArray();
         for(int i = 0; i < newArray.length; i++) {
             if(newArray[i] == '.') continue;
-            if(newArray[i] > oldArray[i]){
+            if(newArray[i] < oldArray[i]){
                 return UpdateStatus.NEW_UPDATE;
             }
         }

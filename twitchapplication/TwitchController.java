@@ -334,4 +334,18 @@ public class TwitchController {
         }
         return screen;
     }
+
+    public void handleUpdate(UpdateUtility.UpdateStatus upStat) {
+        if(startInTray) {
+            java.util.Timer waitTimer = new java.util.Timer();
+            waitTimer.schedule(new TimerTask(){
+                @Override
+                public void run() {
+                    trayNotify(MessageState.INFO, "New Update - click here to open update page!");
+                    twv.trayUpdate(true);
+                }
+            }, 10000);
+        }
+        cfw.setUpdate(upStat, !startInTray);
+    }
 }

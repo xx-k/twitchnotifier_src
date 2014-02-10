@@ -240,22 +240,41 @@ public class TwitchView extends javax.swing.JFrame {
     public void trayNotify(String messageTitle, String message, java.awt.TrayIcon.MessageType type){
         trayIcon.displayMessage(messageTitle, message, type);
     }
+    
+    
+    private boolean updateAvailable = true;
+    
+    public void trayUpdate(boolean update) {
+        updateAvailable = update;
+    }
 
     private void trayAction() {
         boolean atTray = MouseUtility.getInstance().mouseAtTray(MouseInfo.getPointerInfo().getLocation());
         String streamer = listPanel.getRecentOnline();
-        if (atTray && !streamer.isEmpty()) {
-            String twitchURL = "http://www.twitch.tv/" + streamer + (listPanel.getPopoutVideo() ? "/popout" : "");
-            System.out.println("Opening browser URL: " + twitchURL);
-            if (Desktop.isDesktopSupported()) {
-                try {
-                    Desktop.getDesktop().browse(new java.net.URI(twitchURL));
-                } catch (Exception ex) {
-                    showMessage(MessageState.ERROR, "Could not open streamers page!");
-                    ex.printStackTrace();
+        if(atTray) {
+            if(updateAvailable) {
+                 String updateURL = UpdateUtility.getInstance().getUpdateUrl();
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new java.net.URI(updateURL));
+                        updateAvailable = false;
+                    } catch (Exception ex) {
+                        showMessage(MessageState.ERROR, "Could not open update page!");
+                        ex.printStackTrace();
+                    }
                 }
+            } else if(!streamer.isEmpty()) {
+                String twitchURL = "http://www.twitch.tv/" + streamer + (listPanel.getPopoutVideo() ? "/popout" : "");
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new java.net.URI(twitchURL));
+                    } catch (Exception ex) {
+                        showMessage(MessageState.ERROR, "Could not open streamers page!");
+                        ex.printStackTrace();
+                    }
+                }
+                listPanel.clearRecentOnline();
             }
-            listPanel.clearRecentOnline();
             return;
         }
         listPanel.clearRecentOnline();

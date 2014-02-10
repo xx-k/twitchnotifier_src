@@ -355,11 +355,11 @@ public class ConfigWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_versionLabelMouseClicked
 
     private void promptUser(){
-        if(JOptionPane.showConfirmDialog(this, "Open browser?", "New update found!", JOptionPane.YES_NO_OPTION) == 0){
+        if(JOptionPane.showConfirmDialog(this, "New update found, open update page in browser?", "New update found!", JOptionPane.YES_NO_OPTION) == 0){
             try {
                 Desktop.getDesktop().browse(new URI(UpdateUtility.getInstance().getUpdateUrl()));
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Unable to open browser...");
+                JOptionPane.showMessageDialog(this, "Unable to open browser, please go to the following website to update manually:+\n"+UpdateUtility.getInstance().getUpdateUrl());
             }
         }
     }
@@ -394,9 +394,9 @@ public class ConfigWindow extends javax.swing.JFrame {
             autoLoginCheckbox.setEnabled(false);
             autoLoginCheckbox.setSelected(false);
         }
-    }    
-
-    public void setUpdate(UpdateStatus status) {
+    }
+    
+    public void setUpdate(UpdateStatus status, boolean prompt) {
         javax.swing.ImageIcon labelIcon = null;
         String tooltip = "";
         updateLinkPanel.setLayout(new java.awt.GridLayout(1, 1));
@@ -409,7 +409,7 @@ public class ConfigWindow extends javax.swing.JFrame {
                 labelIcon = twc.getView().getIcon(MessageState.INFO);
                 tooltip = "New update found!";
                 newVersion = true;
-                if(updateCheckbox.isSelected()) promptUser();
+                if(updateCheckbox.isSelected() && prompt) promptUser();
                 break;
             case TIMEOUT_UPDATE:
                 labelIcon = twc.getView().getIcon(MessageState.WARNING);

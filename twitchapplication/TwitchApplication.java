@@ -5,7 +5,7 @@ import java.util.*;
 
 public class TwitchApplication {
 
-    private final String appVersion = "0.8.2";
+    private final String appVersion = "0.8.3";
     
     private static TwitchApplication twa;
 

@@ -28,7 +28,7 @@ public class UpdateUtility  {
         TIMEOUT_UPDATE
     }
     
-    private final String updateUrl = "https://github.com/xx-k/twitchnotifier_public";
+    private final String updateUrl = "http://github.com/xx-k/twitchnotifier_public";
     
     //private final String serverUrl = "localhost";
     private final String serverUrl = "87.60.137.185";
@@ -87,8 +87,8 @@ public class UpdateUtility  {
     }
     
     
-    // might not be the best code, because 
-   //if the current version is greater than new version, then a "new update" will still be triggered
+   // might not be the best code, because 
+   // if the current version is greater than new version, then a "new update" will still be triggered
     private UpdateStatus versionComparison(String newVersion, String oldVersion) {
         if(newVersion.length() != oldVersion.length()){
             throw new IllegalArgumentException("Versions must have equal length");

@@ -51,7 +51,7 @@ public class TwitchController {
     }
     
      public void showMessage(MessageState en, String msg, int displayTime) {
-        msm.queueMessage(en, msg, displayTime);
+        msm.queueMessage(en, msg);
     }
     
     public void allowUsernameToBeRemembered(boolean b){
@@ -336,7 +336,7 @@ public class TwitchController {
     }
 
     public void handleUpdate(UpdateUtility.UpdateStatus upStat) {
-        if(startInTray) {
+        if(startInTray && upStat == UpdateUtility.UpdateStatus.NEW_UPDATE) {
             java.util.Timer waitTimer = new java.util.Timer();
             waitTimer.schedule(new TimerTask(){
                 @Override
@@ -345,6 +345,13 @@ public class TwitchController {
                     twv.trayUpdate(true);
                 }
             }, 10000);
+            java.util.Timer resetTimer = new java.util.Timer();
+            resetTimer.schedule(new TimerTask(){
+                @Override
+                public void run() {
+                    twv.trayUpdate(false);
+                }
+            }, 15000);
         }
         cfw.setUpdate(upStat, !startInTray);
     }

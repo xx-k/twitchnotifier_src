@@ -355,7 +355,7 @@ public class ConfigWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_versionLabelMouseClicked
 
     private void promptUser(){
-        if(JOptionPane.showConfirmDialog(this, "New update found, open update page in browser?", "New update found!", JOptionPane.YES_NO_OPTION) == 0){
+        if(JOptionPane.showConfirmDialog(this, "New update found, open update page in browser?", "Twitch Notifier", JOptionPane.YES_NO_OPTION) == 0){
             try {
                 Desktop.getDesktop().browse(new URI(UpdateUtility.getInstance().getUpdateUrl()));
             } catch (Exception ex) {

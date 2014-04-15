@@ -242,7 +242,7 @@ public class TwitchView extends javax.swing.JFrame {
     }
     
     
-    private boolean updateAvailable = true;
+    private boolean updateAvailable = false;
     
     public void trayUpdate(boolean update) {
         updateAvailable = update;

@@ -2,13 +2,15 @@ package twitchapplication;
 
 import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.net.URI;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import twitchapplication.UpdateUtility.UpdateStatus;
 
-public class ConfigWindow extends javax.swing.JFrame {
+public class ConfigWindow extends javax.swing.JFrame implements WindowFocusListener {
 
     private TwitchController twc;
     
@@ -20,6 +22,7 @@ public class ConfigWindow extends javax.swing.JFrame {
         initComponents();
         this.getContentPane().setBackground(Color.LIGHT_GRAY);
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowFocusListener(this);
         setResizable(false);
         this.twc = twc;
     }
@@ -126,8 +129,9 @@ public class ConfigWindow extends javax.swing.JFrame {
         resizeButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         popoutVideoCheckbox = new javax.swing.JCheckBox();
-        timerChangeList = new javax.swing.JComboBox();
         timerChangeButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        timerChangeList = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
         remUsernameCheckbox = new javax.swing.JCheckBox();
         remTrayCheckbox = new javax.swing.JCheckBox();
@@ -159,31 +163,38 @@ public class ConfigWindow extends javax.swing.JFrame {
             }
         });
 
-        timerChangeList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 secs", "30 secs", "1 minute", "2 minutes" }));
-
         timerChangeButton.setText("Set update timer");
+        timerChangeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                timerChangeButtonActionPerformed(evt);
+            }
+        });
+
+        timerChangeList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "15 secs", "30 secs", "1 min", "2 mins", };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(timerChangeList);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(popoutVideoCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(timerChangeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(timerChangeList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(popoutVideoCheckbox))
+                .addComponent(timerChangeButton)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(popoutVideoCheckbox)
-                .addGap(9, 9, 9)
-                .addComponent(timerChangeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(timerChangeButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(timerChangeButton))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "General", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 1, 10), new java.awt.Color(0, 0, 0))); // NOI18N
@@ -289,30 +300,29 @@ public class ConfigWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(updateCheckbox))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(updateCheckbox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(resizeButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(resetButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(updateLinkPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(versionLabel))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(updateCheckbox))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(resizeButton)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(resetButton)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(updateLinkPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(versionLabel))
-                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(updateCheckbox)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -354,6 +364,24 @@ public class ConfigWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_versionLabelMouseClicked
 
+    private void timerChangeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timerChangeButtonActionPerformed
+        switch(timerChangeList.getSelectedIndex()) {
+            default:
+            case 0:
+                twc.setTimeout(15);
+                break;
+            case 1:
+                twc.setTimeout(30);
+                break;
+            case 2:
+                twc.setTimeout(60);
+                break;
+            case 3:
+                twc.setTimeout(120);
+                break;
+        }
+    }//GEN-LAST:event_timerChangeButtonActionPerformed
+
     private void promptUser(){
         if(JOptionPane.showConfirmDialog(this, "New update found, open update page in browser?", "Twitch Notifier", JOptionPane.YES_NO_OPTION) == 0){
             try {
@@ -370,6 +398,7 @@ public class ConfigWindow extends javax.swing.JFrame {
     private javax.swing.JCheckBox decoratedCheckbox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JCheckBox popoutVideoCheckbox;
     private javax.swing.JCheckBox remPositionCheckbox;
     private javax.swing.JCheckBox remTrayCheckbox;
@@ -378,7 +407,7 @@ public class ConfigWindow extends javax.swing.JFrame {
     private javax.swing.JButton resizeButton;
     private javax.swing.JCheckBox startMinimizedCheckbox;
     private javax.swing.JButton timerChangeButton;
-    private javax.swing.JComboBox timerChangeList;
+    private javax.swing.JList timerChangeList;
     private javax.swing.JCheckBox updateCheckbox;
     private javax.swing.JPanel updateLinkPanel;
     private javax.swing.JLabel versionLabel;
@@ -424,4 +453,12 @@ public class ConfigWindow extends javax.swing.JFrame {
         versionLabel.setToolTipText(tooltip);
         versionLabel.setIcon(labelIcon);
     }
+
+    @Override
+    public void windowGainedFocus(WindowEvent e) {
+            twc.setListVisible();
+    }
+
+    @Override
+    public void windowLostFocus(WindowEvent e) {}
 }

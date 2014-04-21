@@ -30,6 +30,7 @@ public class ListPanel extends javax.swing.JPanel {
     private final ImageIcon downIcon = new ImageIcon(getClass().getResource("/res/down.png"));
     private final ImageIcon upIcon = new ImageIcon(getClass().getResource("/res/up.png"));
   
+    private MyWorker workerThread;
     
     /**
      * Creates new form ListPanel
@@ -39,7 +40,6 @@ public class ListPanel extends javax.swing.JPanel {
     public ListPanel(final TwitchController twc) {
         this.twc = twc;
         initComponents();
-        
         onlineScrollPane.setHorizontalScrollBar(null);
         offlineScrollPane.setHorizontalScrollBar(null);   
     }
@@ -96,25 +96,10 @@ public class ListPanel extends javax.swing.JPanel {
                     if(pauseSelect.isSelected()){
                         return;
                     }
-                    class MyWorker extends SwingWorker<String, Object> {
-
-                        @Override
-                        protected String doInBackground() {
-                            progressBar.setIndeterminate(true);
-                            twc.showMessage(MessageState.BLANK, "");
-                            twc.update();
-                            System.gc();
-                            return "Done.";
-                        }
-
-                        @Override
-                        protected void done() {
-                            progressBar.setIndeterminate(false);
-                        }
-                    }
-                    new MyWorker().execute();
+                    workerThread = new MyWorker();
+                    workerThread.execute();
                 }
-            }, timeout * 1000, timeout * 1000);
+            }, 0, timeout * 1000);
         }
         
         drawList(list);
@@ -123,6 +108,23 @@ public class ListPanel extends javax.swing.JPanel {
         twc.setTrayTooltip(internalOnline.size() + " streamers online");
         counter++;
     }
+    
+    public class MyWorker extends SwingWorker<String, Object> {
+        @Override
+        protected String doInBackground() {
+            progressBar.setIndeterminate(true);
+            twc.showMessage(MessageState.BLANK, "");
+            twc.update();
+            System.gc();
+            return "Done.";
+        }
+
+        @Override
+        protected void done() {
+            progressBar.setIndeterminate(false);
+        }
+    }
+
 
     /*
      * Stop the timer and cancel future tasks.

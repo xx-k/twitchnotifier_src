@@ -355,6 +355,16 @@ public class TwitchView extends javax.swing.JFrame {
     public void generateContent(ArrayList<Streamer> list) {
         listPanel.generateLists(list);
     }
+    
+    public void setListVisible() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                toFront();
+                repaint();
+            }
+        });
+    }
 
     public void setUsername(String un) {
         loginPanel.setUsername(un);
@@ -365,6 +375,7 @@ public class TwitchView extends javax.swing.JFrame {
     }
     
     public void setTimeout(int i){
+        showMessage(MessageState.INFO, "Timeout changed to " + i + " secs");
         listPanel.setTimer(i);
     }
     
@@ -375,7 +386,7 @@ public class TwitchView extends javax.swing.JFrame {
     private int i = 0;
     public void setPopoutVideo(boolean b) {
         listPanel.setPopoutVideo(b);
-        if(i++>0){
+        if(++i>0){
             listPanel.redrawList();
         }
     }
@@ -392,4 +403,6 @@ public class TwitchView extends javax.swing.JFrame {
             trayIcon.setToolTip(tooltip);
         }
     }
+
+    
 }

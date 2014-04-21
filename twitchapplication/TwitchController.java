@@ -209,6 +209,10 @@ public class TwitchController {
         return isLoggedIn;
     }
     
+    public void setTimeout(int time) {
+        twv.setTimeout(time);
+    }
+    
     public String getUsername(){
         return twv.getUsername();
     }
@@ -308,7 +312,7 @@ public class TwitchController {
     }
     
     public boolean isConfigVisible(){
-        return cfw.isVisible();
+        return cfw.isShowing();
     }
     
     public void showConfigWindow(boolean b) {
@@ -354,5 +358,10 @@ public class TwitchController {
             }, 15000);
         }
         cfw.setUpdate(upStat, !startInTray);
+    }
+
+    
+    public void setListVisible() {
+        twv.setListVisible();
     }
 }
